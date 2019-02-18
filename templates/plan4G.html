@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <title>Index</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- styles -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css" href="../static/css/main.css">
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="jumbotron jumbotron-fluid">
+        <h1 class="display-4">Background Task</h1>
+        <hr class="my-4">
+        <p class="lead">Long Running Background Tasks with RQ</p>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-lg-6">
+                <form role="form" action="{{url_for('upload_4g')}}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" name="file" accept=".xlsx" class="form-control" id="url-box"
+                               placeholder="Enter file" style="max-width: 500px;" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" role="button">Submit</button>
+                </form>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2>Specify your plan parameters</h2>
+                <form id='plan' action="{{ url_for('plan_4G') }}">
+                    <div class="form-group">
+                        <label for="rCol">Collision avoiding radius (m)</label>
+                        <input type="number" class="form-control" id="rCol" name="rCol" placeholder="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="rMod3">Same mod3 overlapping avoiding radius (m)</label>
+                        <input type="number" class="form-control" id="rMod3" name="rMod3" placeholder="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="rMin">Minimum reused distance (m)</label>
+                        <input type="number" class="form-control" id="rMin" name="rMin" placeholder="100">
+                    </div>
+                    <button type="submit" class="btn btn-warning" role="button">Plan</button>
+                </form>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="{{url_for('download_4G')}}" target="blank">
+                    <button type="button" id="downloadButton" class="btn btn-success" role="button">Download
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+<!-- scripts -->
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="../static/js/main.js"></script>
+</body>
+
+</html>

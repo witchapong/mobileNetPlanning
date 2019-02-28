@@ -6,10 +6,10 @@ $(document).ready(function() {
     $('.btn.btn-warning').click(function() {
 
       // check if the parameters are filled
-      if ($('#rCol').val()!="" && $('#rMod3').val()!="" && $('#rMin').val()!=""){
+      if ($('#rCol').val()!="" && $('#rMin').val()!=""){
           $.ajax({
             type: 'POST',
-            url: "/plan_4G",
+            url: "/plan_3G",
             data:$('#plan').serialize(),
             success: function(response){
 
@@ -69,7 +69,7 @@ $(document).ready(function() {
                 }
 
                 // if progress == 100, stop the process
-                if (parseInt(pg) == 100) {
+                if (parseInt(pg == 100) {
                     clearInterval(periodic_func);
                     // enable the download button
                     $('#downloadButton').removeAttr("disabled");
@@ -89,6 +89,5 @@ $(document).ready(function() {
         console.log('progress:' + val)
         $('#pgBar').attr('style','width: '+val+'%')
     };
-
 
 });

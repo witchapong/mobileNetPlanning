@@ -1,15 +1,21 @@
 # import fiona
-# from shapely.geometry import Point
-# from shapely.geometry import shape
+import shapefile
+from shapely.geometry import Point
+from shapely.geometry import shape
 import pandas as pd
 import numpy as np
 from pyproj import Proj
 from geopy import distance
-
+from rq import get_current_job
+import datetime
+import time
 
 class PCIRSIPlanner:
-    # poly = fiona.open(f"src/Border_BKK_rv3_region.shp")
+
+    # poly = fiona.open("src/Border_BKK_rv3_region.shp")
     # poly_obj = [shape(item['geometry']) for item in poly]
+    sf = shapefile.Reader("src/Border_BKK_rv3_region.shp")
+    poly_obj = [shape(item) for item in sf.shapes()]
 
     # define PCI range
     pci_inner_macro = range(0, 306)
@@ -29,29 +35,30 @@ class PCIRSIPlanner:
     rsi_outer_pico = range(750, 838, 6)
     rsi_border = range(210, 510, 6)
 
-    def __init__(self, file):
+    def __init__(self,file):
         self.plan_file = pd.read_excel(file)
 
-    # def map2poly(self,x,df):
-    #
-    #     if pd.isna(x['AREA_TYPE']):
-    #         point = Point(x['LNG'], x['LAT'])
-    #         for i, ply in enumerate(self.poly_obj):
-    #             if ply.contains(point):
-    #                 return self.poly[i]['properties']['AREA_TYPE']
-    #         else:
-    #
-    #             # find the area type from the closest available lat,lng
-    #             df['DISTANCE'] = df.apply(
-    #                 lambda col: distance.distance((col['LAT'], col['LNG']), (x['LAT'], x['LNG'])), axis=1)
-    #             df['DISTANCE'] = df['DISTANCE'].apply(lambda x: x.km)
-    #             temp_df = df[(~df['AREA_TYPE'].isna())]
-    #             return temp_df[temp_df['DISTANCE'] == temp_df['DISTANCE'].min()].iloc[0]['AREA_TYPE']
-    #     else:
-    #         return x['AREA_TYPE']
+    def map2poly(self,x,df):
+
+        if pd.isna(x['AREA_TYPE']):
+            point = Point(x['LNG'], x['LAT'])
+            for i, ply in enumerate(self.poly_obj):
+                if ply.contains(point):
+                    return self.sf.records()[i][2]
+            else:
+
+                # find the area type from the closest available lat,lng
+                df['DISTANCE'] = df.apply(
+                    lambda col: distance.distance((col['LAT'], col['LNG']), (x['LAT'], x['LNG'])), axis=1)
+                df['DISTANCE'] = df['DISTANCE'].apply(lambda x: x.km)
+                temp_df = df[(~df['AREA_TYPE'].isna())]
+                return temp_df[temp_df['DISTANCE'] == temp_df['DISTANCE'].min()].iloc[0]['AREA_TYPE']
+        else:
+            return x['AREA_TYPE']
+
 
     # create function for calculating circle overlapped area
-    def circle_ol_area(self, x, r_mod3):
+    def circle_ol_area(self,x,r_mod3):
         r = r_mod3 / 1000
         if x['CELL2CELL_DIST'] <= 2 * r:
             return 2 * r ** 2 * np.arccos(x['CELL2CELL_DIST'] / 2 / r) - x['CELL2CELL_DIST'] / 2 * np.sqrt(
@@ -59,15 +66,16 @@ class PCIRSIPlanner:
         else:
             return 0.0
 
-    def plan(self, r_col, r_mod3, dist_min, skt):
+    def plan(self,r_col,r_mod3,dist_min):
 
-        skt.sleep(0)
+        job = get_current_job()
+        print('Starting task')
 
         all_info = self.plan_file.copy()
         all_info['COPCI_NEAREST_DIST'] = 0
         all_info['CORSI_NEAREST_DIST'] = 0
-        # all_info['AREA_TYPE'] = all_info.apply(lambda x: self.map2poly(x,all_info), axis=1)
-        all_info['AREA_TYPE'] = all_info['AREA_TYPE'].fillna("border")
+        all_info['AREA_TYPE'] = all_info.apply(lambda x: self.map2poly(x,all_info), axis=1)
+        all_info['AREA_TYPE']=all_info['AREA_TYPE'].fillna("border")
         all_info['AREA_TYPE'] = all_info['AREA_TYPE'].apply(lambda x: x.lower())
 
         # split plan file to df of existing cells and cells to plan
@@ -76,7 +84,6 @@ class PCIRSIPlanner:
 
         for i in range(cell2plan.shape[0]):
 
-            skt.sleep(0)
             # calculate distance
             lat = cell2plan.iloc[i]['LAT']
             lng = cell2plan.iloc[i]['LNG']
@@ -143,10 +150,9 @@ class PCIRSIPlanner:
             rsi_df.reset_index(inplace=True)
             rsi_df.columns = ['RSI', 'COUNT']
 
-            skt.sleep(0)
             # INSERT CONDITION FOR A CELL WITH THE SPECIFIED MOD3 GROUP HERE!!!
-            if ~pd.isna(cell2plan.iloc[i]['MOD3_GROUP']):
-                least_ol_mod3_g = int(cell2plan.iloc[i]['MOD3_GROUP'])
+            if not pd.isna(cell2plan.iloc[i]['SPECIFIED_MOD3_GROUP']):
+                least_ol_mod3_g = int(cell2plan.iloc[i]['SPECIFIED_MOD3_GROUP'])
             else:
                 # filter only cells within the mod3 conflict zone
                 lte_cell_filtered_2 = lte_cell_filtered_1[lte_cell_filtered_1['DISTANCE'] < 3 * r_mod3 / 1000]
@@ -158,10 +164,10 @@ class PCIRSIPlanner:
                     lte_cell_filtered_2['DIRECTION'] = lte_cell_filtered_2['DIRECTION'].apply(lambda x: float(x))
                     lte_cell_filtered_2['X_COV'] = lte_cell_filtered_2.apply(
                         lambda col: (col['X'] + r_mod3 * np.sin(col['DIRECTION'] / 180 * np.pi)) if (
-                                col['DIRECTION'] != -1) else col['X'], axis=1)
+                                    col['DIRECTION'] != -1) else col['X'], axis=1)
                     lte_cell_filtered_2['Y_COV'] = lte_cell_filtered_2.apply(
                         lambda col: (col['Y'] + r_mod3 * np.cos(col['DIRECTION'] / 180 * np.pi)) if (
-                                col['DIRECTION'] != -1) else col['Y'], axis=1)
+                                    col['DIRECTION'] != -1) else col['Y'], axis=1)
                     lte_cell_filtered_2['LNG_COV'], lte_cell_filtered_2['LAT_COV'] = utm_proj(
                         np.array(lte_cell_filtered_2['X_COV']), np.array(lte_cell_filtered_2['Y_COV']), inverse=True)
                     lte_cell_filtered_2.drop(['X', 'Y', 'X_COV', 'Y_COV'], axis=1, inplace=True)
@@ -170,8 +176,7 @@ class PCIRSIPlanner:
                     lte_cell_filtered_2['CELL2CELL_DIST'] = lte_cell_filtered_2['CELL2CELL_DIST'].apply(lambda x: x.km)
 
                     # calculate the overlapped area of each PCImod3 grp
-                    lte_cell_filtered_2['OL_AREA'] = lte_cell_filtered_2.apply(lambda x: self.circle_ol_area(x, r_mod3),
-                                                                               axis=1)
+                    lte_cell_filtered_2['OL_AREA'] = lte_cell_filtered_2.apply(lambda x:self.circle_ol_area(x,r_mod3), axis=1)
                     lte_cell_filtered_2['MOD3_GROUP'] = lte_cell_filtered_2['PCI'].apply(lambda x: int(x % 3))
 
                     # find the PCI group that fits
@@ -184,8 +189,6 @@ class PCIRSIPlanner:
                     least_ol_mod3_g = ol_arr.argmin()
                 else:
                     least_ol_mod3_g = -1
-
-            skt.sleep(0)
 
             # find the PCI with min reused and largest nearest reused distance
             if least_ol_mod3_g != -1:
@@ -240,7 +243,7 @@ class PCIRSIPlanner:
                             continue
                 else:
                     chosen_pci = np.int64(999)
-            skt.sleep(0)
+
             if isinstance(chosen_pci, np.int64):
                 cell2plan['PCI'].iloc[i] = chosen_pci
             else:
@@ -286,8 +289,12 @@ class PCIRSIPlanner:
             # write each planned cell to cell info
             lte_cell_info = lte_cell_info.append(cell2plan.iloc[i], ignore_index=True)
 
-            # skt.emit('progress', {'message': f'({i+1}/{cell2plan.shape[0]}) planned'}, namespace='/plan_4g')
+            job.meta['progress'] = 100.0 * i / cell2plan.shape[0]
+            job.save_meta()
 
         cell2plan['PLAN_DATE'] = pd.datetime.today().date()
-
-        return cell2plan
+        file_name = f'output/plan_result_4g_{datetime.datetime.fromtimestamp(time.time()).strftime("%Y-%m-%d-%H-%M-%S")}.xlsx'
+        cell2plan.to_excel(file_name,index=False)
+        job.meta['progress'] = 100.0
+        job.meta['file_name'] = file_name
+        job.save_meta()

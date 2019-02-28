@@ -1,55 +1,60 @@
 # import fiona
-# from shapely.geometry import Point
-# from shapely.geometry import shape
-# from geopy import distance
+import shapefile
+from shapely.geometry import Point
+from shapely.geometry import shape
+from geopy import distance
 import pandas as pd
 import numpy as np
-
+from rq import get_current_job
+import datetime
+import time
 
 class PSCPlanner:
+
     # poly = fiona.open(f"src/Border_BKK_rv3_region.shp")
     # poly_obj = [shape(item['geometry']) for item in poly]
+    sf = shapefile.Reader("src/Border_BKK_rv3_region.shp")
+    poly_obj = [shape(item) for item in sf.shapes()]
 
-    # define psc for border cells
-    psc_border_macro = [x * 8 + 4 for x in range(0, 33)] + [x * 8 + 5 for x in range(0, 33)] + [x * 8 + 6 for x in
-                                                                                                range(0, 33)]
-    psc_border_micro = [x * 8 + 268 for x in range(0, 15)] + [x * 8 + 269 for x in range(0, 15)] + [x * 8 + 270 for x in
-                                                                                                    range(0, 15)]
-    psc_border_pico = [x * 8 + 388 for x in range(0, 16)] + [x * 8 + 389 for x in range(0, 16)] + [x * 8 + 390 for x in
-                                                                                                   range(0, 16)]
+    #define psc for border cells
+    psc_border_macro = [x*8+4 for x in range(0,33)] + [x*8+5 for x in range(0,33)] + [x*8+6 for x in range(0,33)]
+    psc_border_micro = [x*8+268 for x in range(0,15)] + [x*8+269 for x in range(0,15)] + [x*8+270 for x in range(0,15)]
+    psc_border_pico = [x*8+388 for x in range(0,16)] + [x*8+389 for x in range(0,16)] + [x*8+390 for x in range(0,16)]
 
-    # define psc for inner+outer cells
-    psc_macro = list(range(1, 264))
-    psc_micro = list(range(264, 384))
-    psc_pico = list(range(384, 512))
+    #define psc for inner+outer cells
+    psc_macro = list(range(1,264))
+    psc_micro = list(range(264,384))
+    psc_pico = list(range(384,512))
 
-    def __init__(self, file):
+    def __init__(self,file):
         self.plan_file = pd.read_excel(file)
 
-    # def map2poly(self,x,df):
-    #
-    #     if pd.isna(x['AREA_TYPE']):
-    #         point = Point(x['LNG'], x['LAT'])
-    #         for i, ply in enumerate(self.poly_obj):
-    #             if ply.contains(point):
-    #                 return self.poly[i]['properties']['AREA_TYPE']
-    #         else:
-    #
-    #             # find the area type from the closest available lat,lng
-    #             df['DISTANCE'] = df.apply(
-    #                 lambda col: distance.distance((col['LAT'], col['LNG']), (x['LAT'], x['LNG'])), axis=1)
-    #             df['DISTANCE'] = df['DISTANCE'].apply(lambda x: x.km)
-    #             temp_df = df[(~df['AREA_TYPE'].isna())]
-    #             return temp_df[temp_df['DISTANCE'] == temp_df['DISTANCE'].min()].iloc[0]['AREA_TYPE']
-    #     else:
-    #         return x['AREA_TYPE']
+    def map2poly(self,x,df):
+
+        if pd.isna(x['AREA_TYPE']):
+            point = Point(x['LNG'], x['LAT'])
+            for i, ply in enumerate(self.poly_obj):
+                if ply.contains(point):
+                    return self.sf.records()[i][2]
+            else:
+
+                # find the area type from the closest available lat,lng
+                df['DISTANCE'] = df.apply(
+                    lambda col: distance.distance((col['LAT'], col['LNG']), (x['LAT'], x['LNG'])), axis=1)
+                df['DISTANCE'] = df['DISTANCE'].apply(lambda x: x.km)
+                temp_df = df[(~df['AREA_TYPE'].isna())]
+                return temp_df[temp_df['DISTANCE'] == temp_df['DISTANCE'].min()].iloc[0]['AREA_TYPE']
+        else:
+            return x['AREA_TYPE']
 
     def plan(self, r_col, min_dist):
 
-        cell_info = self.plan_file.copy()
+        job = get_current_job()
+        print('Starting task')
 
+        cell_info = self.plan_file.copy()
         # convert all border labels to lower case
-        # cell_info['AREA_TYPE'] = cell_info.apply(lambda x:self.map2poly(x,cell_info), axis=1)
+        cell_info['AREA_TYPE'] = cell_info.apply(lambda x:self.map2poly(x,cell_info), axis=1)
         cell_info['AREA_TYPE'] = cell_info['AREA_TYPE'].fillna("border")
         cell_info['AREA_TYPE'] = cell_info['AREA_TYPE'].apply(lambda x: x.lower())
 
@@ -84,8 +89,6 @@ class PSCPlanner:
                     psc_range = self.psc_pico
 
             # calculate distance between cell and the other cells
-            from geopy import distance
-
             u2100_cell_info['DISTANCE'] = u2100_cell_info.apply(
                 lambda col: distance.distance((col['LAT'], col['LNG']), (lat, lng)), axis=1)
             u2100_cell_info['DISTANCE'] = u2100_cell_info['DISTANCE'].apply(lambda x: x.km)
@@ -145,6 +148,12 @@ class PSCPlanner:
             # write each planned cell to cell info
             u2100_cell_info = u2100_cell_info.append(cell2plan.iloc[i], ignore_index=True)
 
-        cell2plan['PLAN_DATE'] = pd.datetime.today().date()
+            job.meta['progress'] = 100.0 * i / cell2plan.shape[0]
+            job.save_meta()
 
-        return cell2plan
+        cell2plan['PLAN_DATE'] = pd.datetime.today().date()
+        file_name = f'output/plan_result_3g_{datetime.datetime.fromtimestamp(time.time()).strftime("%Y-%m-%d-%H-%M-%S")}.xlsx'
+        cell2plan.to_excel(file_name,index=False)
+        job.meta['progress'] = 100.0
+        job.meta['file_name'] = file_name
+        job.save_meta()

@@ -5,22 +5,25 @@
 import pandas as pd
 import numpy as np
 
-class PSCPlanner:
 
+class PSCPlanner:
     # poly = fiona.open(f"src/Border_BKK_rv3_region.shp")
     # poly_obj = [shape(item['geometry']) for item in poly]
 
-    #define psc for border cells
-    psc_border_macro = [x*8+4 for x in range(0,33)] + [x*8+5 for x in range(0,33)] + [x*8+6 for x in range(0,33)]
-    psc_border_micro = [x*8+268 for x in range(0,15)] + [x*8+269 for x in range(0,15)] + [x*8+270 for x in range(0,15)]
-    psc_border_pico = [x*8+388 for x in range(0,16)] + [x*8+389 for x in range(0,16)] + [x*8+390 for x in range(0,16)]
+    # define psc for border cells
+    psc_border_macro = [x * 8 + 4 for x in range(0, 33)] + [x * 8 + 5 for x in range(0, 33)] + [x * 8 + 6 for x in
+                                                                                                range(0, 33)]
+    psc_border_micro = [x * 8 + 268 for x in range(0, 15)] + [x * 8 + 269 for x in range(0, 15)] + [x * 8 + 270 for x in
+                                                                                                    range(0, 15)]
+    psc_border_pico = [x * 8 + 388 for x in range(0, 16)] + [x * 8 + 389 for x in range(0, 16)] + [x * 8 + 390 for x in
+                                                                                                   range(0, 16)]
 
-    #define psc for inner+outer cells
-    psc_macro = list(range(1,264))
-    psc_micro = list(range(264,384))
-    psc_pico = list(range(384,512))
+    # define psc for inner+outer cells
+    psc_macro = list(range(1, 264))
+    psc_micro = list(range(264, 384))
+    psc_pico = list(range(384, 512))
 
-    def __init__(self,file):
+    def __init__(self, file):
         self.plan_file = pd.read_excel(file)
 
     # def map2poly(self,x,df):

@@ -6,8 +6,8 @@ import numpy as np
 from pyproj import Proj
 from geopy import distance
 
-class PCIRSIPlanner:
 
+class PCIRSIPlanner:
     # poly = fiona.open(f"src/Border_BKK_rv3_region.shp")
     # poly_obj = [shape(item['geometry']) for item in poly]
 
@@ -29,7 +29,7 @@ class PCIRSIPlanner:
     rsi_outer_pico = range(750, 838, 6)
     rsi_border = range(210, 510, 6)
 
-    def __init__(self,file):
+    def __init__(self, file):
         self.plan_file = pd.read_excel(file)
 
     # def map2poly(self,x,df):
@@ -50,9 +50,8 @@ class PCIRSIPlanner:
     #     else:
     #         return x['AREA_TYPE']
 
-
     # create function for calculating circle overlapped area
-    def circle_ol_area(self,x,r_mod3):
+    def circle_ol_area(self, x, r_mod3):
         r = r_mod3 / 1000
         if x['CELL2CELL_DIST'] <= 2 * r:
             return 2 * r ** 2 * np.arccos(x['CELL2CELL_DIST'] / 2 / r) - x['CELL2CELL_DIST'] / 2 * np.sqrt(
@@ -60,14 +59,15 @@ class PCIRSIPlanner:
         else:
             return 0.0
 
-    def plan(self,r_col,r_mod3,dist_min,skt):
+    def plan(self, r_col, r_mod3, dist_min, skt):
 
-        # skt.sleep(0)
+        skt.sleep(0)
+
         all_info = self.plan_file.copy()
         all_info['COPCI_NEAREST_DIST'] = 0
         all_info['CORSI_NEAREST_DIST'] = 0
         # all_info['AREA_TYPE'] = all_info.apply(lambda x: self.map2poly(x,all_info), axis=1)
-        all_info['AREA_TYPE']=all_info['AREA_TYPE'].fillna("border")
+        all_info['AREA_TYPE'] = all_info['AREA_TYPE'].fillna("border")
         all_info['AREA_TYPE'] = all_info['AREA_TYPE'].apply(lambda x: x.lower())
 
         # split plan file to df of existing cells and cells to plan
@@ -158,10 +158,10 @@ class PCIRSIPlanner:
                     lte_cell_filtered_2['DIRECTION'] = lte_cell_filtered_2['DIRECTION'].apply(lambda x: float(x))
                     lte_cell_filtered_2['X_COV'] = lte_cell_filtered_2.apply(
                         lambda col: (col['X'] + r_mod3 * np.sin(col['DIRECTION'] / 180 * np.pi)) if (
-                                    col['DIRECTION'] != -1) else col['X'], axis=1)
+                                col['DIRECTION'] != -1) else col['X'], axis=1)
                     lte_cell_filtered_2['Y_COV'] = lte_cell_filtered_2.apply(
                         lambda col: (col['Y'] + r_mod3 * np.cos(col['DIRECTION'] / 180 * np.pi)) if (
-                                    col['DIRECTION'] != -1) else col['Y'], axis=1)
+                                col['DIRECTION'] != -1) else col['Y'], axis=1)
                     lte_cell_filtered_2['LNG_COV'], lte_cell_filtered_2['LAT_COV'] = utm_proj(
                         np.array(lte_cell_filtered_2['X_COV']), np.array(lte_cell_filtered_2['Y_COV']), inverse=True)
                     lte_cell_filtered_2.drop(['X', 'Y', 'X_COV', 'Y_COV'], axis=1, inplace=True)
@@ -170,7 +170,8 @@ class PCIRSIPlanner:
                     lte_cell_filtered_2['CELL2CELL_DIST'] = lte_cell_filtered_2['CELL2CELL_DIST'].apply(lambda x: x.km)
 
                     # calculate the overlapped area of each PCImod3 grp
-                    lte_cell_filtered_2['OL_AREA'] = lte_cell_filtered_2.apply(lambda x:self.circle_ol_area(x,r_mod3), axis=1)
+                    lte_cell_filtered_2['OL_AREA'] = lte_cell_filtered_2.apply(lambda x: self.circle_ol_area(x, r_mod3),
+                                                                               axis=1)
                     lte_cell_filtered_2['MOD3_GROUP'] = lte_cell_filtered_2['PCI'].apply(lambda x: int(x % 3))
 
                     # find the PCI group that fits
@@ -183,7 +184,9 @@ class PCIRSIPlanner:
                     least_ol_mod3_g = ol_arr.argmin()
                 else:
                     least_ol_mod3_g = -1
+
             skt.sleep(0)
+
             # find the PCI with min reused and largest nearest reused distance
             if least_ol_mod3_g != -1:
                 # in case where threre is overlapped area
@@ -282,9 +285,9 @@ class PCIRSIPlanner:
 
             # write each planned cell to cell info
             lte_cell_info = lte_cell_info.append(cell2plan.iloc[i], ignore_index=True)
+
             # skt.emit('progress', {'message': f'({i+1}/{cell2plan.shape[0]}) planned'}, namespace='/plan_4g')
 
         cell2plan['PLAN_DATE'] = pd.datetime.today().date()
-
 
         return cell2plan

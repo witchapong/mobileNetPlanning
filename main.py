@@ -19,6 +19,11 @@ def index():
     return render_template('main.html')
 
 
+@app.route("/download.html")
+def downloaded():
+    return render_template("download.html")
+
+
 @app.route("/plan4G.html")
 def call_4g():
     return render_template("plan4G.html")
@@ -121,4 +126,5 @@ def job_status(job_id):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0',
+            port=5003)

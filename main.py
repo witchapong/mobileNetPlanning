@@ -19,9 +19,9 @@ def index():
     return render_template('main.html')
 
 
-@app.route("/download.html")
+@app.route("/downloaded.html")
 def downloaded():
-    return render_template("download.html")
+    return render_template("downloaded.html")
 
 
 @app.route("/plan4G.html")

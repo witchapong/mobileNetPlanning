@@ -14,15 +14,13 @@
     <div class="jumbotron jumbotron-fluid">
         <h1 class="display-4">PCI&RSI planning</h1>
         <hr class="my-4">
-        <h2>Instruction</h2>
-        <ol>
-            <li>Upload your plan file which should contain all required columns shown below. Now the app supports only
-                .xlsx file.
-            </li>
-            <li>Press the plan button and wait until completion</li>
-            <li>Download output files</li>
-        </ol>
-        <h2>Required columns and description</h2>
+                  <h2>Instruction</h2>
+            <ol>
+                <li>Upload your plan file which should contain all required columns shown below. Now the app supports only .xlsx file.</li>
+                <li>Press the plan button and wait until completion</li>
+                <li>Download output files</li>
+            </ol>
+            <h2>Required columns and description</h2>
         <table class="table table-striped">
             <tr>
                 <th>Column name</th>
@@ -35,8 +33,7 @@
             <tr>
                 <td>MOD3_GROUP</td>
                 <td>Preferred PCImod3 group. (Optional)<br>
-                    Possible values: [0,1,2]
-                </td>
+                Possible values: [0,1,2]</td>
             </tr>
             <tr>
                 <td>RSI</td>
@@ -64,7 +61,7 @@
             <tr>
                 <td>SITE_TYPE</td>
                 <td>Whether a site type of a cell is 'macro','micro',or 'pico'.<br>
-                    Possible values: ['macro','micro','pico']
+                Possible values: ['macro','micro','pico']
                 </td>
             </tr>
         </table>
@@ -105,23 +102,19 @@
         <p id="statusLog">Status:</p>
         <p id="progressLog">Progress:</p>
         <div class="progress">
-            <div class="progress-bar progress-bar-striped bg-success" id="pgBar" role="progressbar" style="width: 0%"
-                 aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar progress-bar-striped bg-success" id = "pgBar" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div class="row">
             <div class="col-lg-6">
                 <form role="form" action="{{url_for('download_4G')}}" method="POST" enctype="multipart/form-data">
-                    <button type="submit" id="downloadButton" class="btn btn-secondary" role="button" disabled>
-                        Download
-                    </button>
-                    <input type="text" class="form-control" id="fileName" name="fileName" value=""
-                           style="visibility: hidden">
+                    <button type="submit" id="downloadButton" class="btn btn-secondary" role="button" disabled>Download</button>
+                    <input type="text" class="form-control" id ="fileName" name="fileName" value="" style="visibility: hidden">
                 </form>
             </div>
         </div>
         <ul class="nav nav-pills">
-            <li role="presentation"><a href="plan4G.html">Reload</a></li>
-            <li role="presentation"><a href="{{url_for('index')}}">Home</a></li>
+          <li role="presentation"><a href="plan4G.html">Reload</a></li>
+          <li role="presentation"><a href="{{url_for('index')}}">Home</a></li>
         </ul>
     </div>
 </div>
@@ -129,7 +122,8 @@
 
 <!-- scripts -->
 <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="../static/js/main.js"></script>
 </body>
 

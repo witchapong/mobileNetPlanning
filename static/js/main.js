@@ -65,6 +65,7 @@ $(document).ready(function() {
                 // update the log
                 $('#statusLog').text('Status: '+response['status'])
                 if (pg!= 'undefined'){
+                if (pg != 'undefined'){
                     $('#progressLog').text('Progress: '+pg)
                 }
 

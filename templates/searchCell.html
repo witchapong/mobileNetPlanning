@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/css/main.css">
+
+    <title>search cell</title>
+</head>
+<body>
+<h1 class="display-5">Radio Masterplan-BKK</h1>
+<div class="container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 mx-auto">
+                <div class="input-group mb-3">
+                    <!--<div class="form-control">-->
+                    <form role="form" action="{{url_for('search_data')}}" class="form-inline"
+                          method="POST" enctype=multipart/form-data>
+                        <div class="form-group row">
+                            <div class="col-lg-2 search-submit">
+                                <!--<div class="input-group-append">-->
+                                    <!--<button id="filter" name="filter" class="btn btn-light dropdown-toggle" type="button"-->
+                                    <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="By">By-->
+                                    <!--</button>-->
+
+                                    <select class="custom-select" id="filterBy" name="filterBy">
+                                        <option selected>Search</option>
+                                        <option value="cellname">CellName</option>
+                                        <option value="sitecode">SiteCode</option>
+                                        <option value="siteconfig">SiteConfig</option>
+                                    </select>
+
+                                    <!--<div id="filterBy" class="dropdown-menu">-->
+                                    <!--<a data-search="cellname" class="dropdown-item" name="filterValue">CellName</a>-->
+                                    <!--<a data-search="sitecode" class="dropdown-item" name="filterValue">SiteCode</a>-->
+                                    <!--<a data-search="siteconfig" class="dropdown-item" name="filterValue">SiteConfig</a>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            </div>
+
+                            <div class="col-lg-8 search-submit">
+                                <input id="searchParam" type="hidden" name="searchParam" value="all">
+                                <input id="searchValue" name="searchValue" type="text" class="search-form form-control"
+                                       placeholder="Search" required>
+                            </div>
+
+                            <div class="col-lg-2 search-submit">
+                                <!--<div class="input-group-append">-->
+                                    <button class="btn btn-outline-success my-2 my-sm-0"
+                                            type="submit" value="submit">Search
+                                    </button>
+                                <!--</div>-->
+                            </div>
+                        </div>
+                    </form>
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if result %}
+    <div class="table-responsive text-nowrap">
+        <table id="searchCell4G" class="table table-hover table-fixed">
+            <thead>
+            <tr class="head-cell">
+                <th scope="col">CELLNAME</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">SITE</th>
+                <th scope="col">SYSTEM</th>
+                <th scope="col">CELLID</th>
+                <th scope="col">ENODEB</th>
+                <th scope="col">ENODEBID</th>
+                <th scope="col">LAC</th>
+                <th scope="col">TAC</th>
+                <th scope="col">MCC</th>
+                <th scope="col">MNC</th>
+                <th scope="col">DL_EARFCN</th>
+                <th scope="col">DUPLEX</th>
+                <th scope="col">PCI</th>
+                <th scope="col">TXRX</th>
+                <th scope="col">EMTC</th>
+                <th scope="col">SITENAME_EN</th>
+                <th scope="col">SITENAME_EN</th>
+                <th scope="col">ENGINEER</th>
+                <th scope="col">BBU_TYPE</th>
+                <th scope="col">LATITUDE</th>
+                <th scope="col">LONGITUDE</th>
+                <th scope="col">ZONE</th>
+            </thead>
+            {% for row in result %}
+            <tr class="cell">
+                <td>{{ row.cell_name }}</td>
+                {% if row.cell_status == 'No' %}
+                <td class="table-primary">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Yes' %}
+                <td class="table-success">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Locked' %}
+                <td class="table-warning">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Removed' %}
+                <td class="table-danger">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Relocated' %}
+                <td class="table-info">{{ row.cell_status }}</td>
+                {% endif %}
+                <td>{{ row.site_code }}</td>
+                <td>{{ row.system }}</td>
+                <td>{{ row.cell_id }}</td>
+                <td>{{ row.enodeb_name }}</td>
+                <td>{{ row.enodeb_id }}</td>
+                <td>{{ row.lac }}</td>
+                <td>{{ row.tac }}</td>
+                <td>{{ row.mcc }}</td>
+                <td>{{ row.mnc }}</td>
+                <td>{{ row.dl_earfcn }}</td>
+                <td>{{ row.duplex }}</td>
+                <td>{{ row.pci }}</td>
+                <td>{{ row.cell_txrx }}</td>
+                <td>{{ row.emtc_flag }}</td>
+                <td>{{ row.site_name_en }}</td>
+                <td>{{ row.site_name_th }}</td>
+                <td>{{ row.contact_person }}</td>
+                <td>{{ row.bbu_type }}</td>
+                <td>{{ row.latitude }}</td>
+                <td>{{ row.longitude }}</td>
+                <td>{{ row.routing_zone }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    {% if body %}
+    <div class="table-responsive text-nowrap">
+        <table id="searchCell3G" class="table table-hover table-fixed">
+            <caption style="font-size: 12px;font-weight: bolder;">Developed by Radio-BKK developer</caption>
+            <thead>
+            <tr class="head-cell">
+                <th scope="col">CELLNAME</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">SITE</th>
+                <th scope="col">SYSTEM</th>
+                <th scope="col">CELLID</th>
+                <th scope="col">NODEB</th>
+                <th scope="col">NODEBID</th>
+                <th scope="col">RNC</th>
+                <th scope="col">RNCID</th>
+                <th scope="col">LAC</th>
+                <th scope="col">MCC</th>
+                <th scope="col">MNC</th>
+                <th scope="col">DL_UARFCN</th>
+                <th scope="col">DUPLEX</th>
+                <th scope="col">PSC</th>
+                <th scope="col">TXRX</th>
+                <th scope="col">SITENAME_EN</th>
+                <th scope="col">SITENAME_EN</th>
+                <th scope="col">ENGINEER</th>
+                <th scope="col">BBU_TYPE</th>
+                <th scope="col">LATITUDE</th>
+                <th scope="col">LONGITUDE</th>
+                <th scope="col">ZONE</th>
+            </thead>
+            {% for row in body %}
+            <tr class="cell">
+                <td>{{ row.cell_name }}</td>
+                {% if row.cell_status == 'No' %}
+                <td class="table-primary">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Yes' %}
+                <td class="table-success">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Locked' %}
+                <td class="table-warning">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Removed' %}
+                <td class="table-danger">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Relocated' %}
+                <td class="table-info">{{ row.cell_status }}</td>
+                {% endif %}
+                <td>{{ row.site_code }}</td>
+                <td>{{ row.system }}</td>
+                <td>{{ row.cell_id }}</td>
+                <td>{{ row.nodeb_name }}</td>
+                <td>{{ row.nodeb_id }}</td>
+                <td>{{ row.rnc }}</td>
+                <td>{{ row.rnc_id }}</td>
+                <td>{{ row.lac }}</td>
+                <td>{{ row.mcc }}</td>
+                <td>{{ row.mnc }}</td>
+                <td>{{ row.dl_uarfcn }}</td>
+                <td>{{ row.duplex }}</td>
+                <td>{{ row.psc }}</td>
+                <td>{{ row.cell_txrx }}</td>
+                <td>{{ row.site_name_en }}</td>
+                <td>{{ row.site_name_th }}</td>
+                <td>{{ row.contact_person }}</td>
+                <td>{{ row.bbu_type }}</td>
+                <td>{{ row.latitude }}</td>
+                <td>{{ row.longitude }}</td>
+                <td>{{ row.routing_zone }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="../static/js/searchPage.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+

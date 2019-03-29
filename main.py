@@ -4,6 +4,8 @@ from rq.job import Job
 from worker import redis_con
 from Planner4G import PCIRSIPlanner
 from Planner3G import PSCPlanner
+from database import customer
+import requests
 
 __author__ = 'rpo'
 
@@ -118,6 +120,41 @@ def job_status(job_id):
         if job.is_failed:
             response['message'] = job.exc_info.strip().split('\n')[-1]
     return jsonify(response)
+
+
+#
+# query from DB
+#
+@app.route("/searchCell.html")
+def call_searchCell():
+    return render_template("searchCell.html")
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_data():
+    if request.method == 'POST':
+        filterParam = request.form.get('filterBy')
+        searchParam = request.form.get('searchValue')
+        if filterParam == 'cellname':
+            res1 = customer.list_customers1(searchParam)
+            res2 = customer.list_customers2(searchParam)
+            return render_template('searchCell.html', result=res1, body=res2, content_type='application/json')
+        elif filterParam == 'sitecode':
+            res1 = customer.list_customers3(searchParam)
+            res2 = customer.list_customers4(searchParam)
+            return render_template('searchCell.html', result=res1, body=res2, content_type='application/json')
+        else:
+            return render_template('searchCell.html', result=None, body=None, content_type='application/json')
+
+
+
+@app.route('/search/api/')
+def customers_api():
+    response = requests.get('https://jsonplaceholder.typicode.com/posts/1/comments', timeout=5)
+    result = response.json()
+    # for row in result:
+    #     print(row)
+    return render_template('searchCellApi.html', result=result, content_type='application/json')
 
 
 if __name__ == "__main__":

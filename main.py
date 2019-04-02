@@ -24,11 +24,6 @@ def index():
     return render_template('main.html', link=cross_url)
 
 
-@app.route("/downloaded.html")
-def downloaded():
-    return render_template("downloaded.html")
-
-
 @app.route("/download.html")
 def download():
     return render_template("download.html", link=cross_url, link_download=download_url)
@@ -154,57 +149,72 @@ def search_data():
                 return render_template('searchCell.html', result=None, link=cross_url, content_type='application/json')
             else:
                 cell, system = search_for_cell(searchParam)
-                if system == 'LTE':
-                    return render_template('searchCell.html', data_4g=cell, data_3g=None, data_2g=None, data_nb=None,
-                                           link=cross_url, content_type='application/json')
-                elif system == 'UMTS':
-                    return render_template('searchCell.html', data_4g=None, data_3g=cell, data_2g=None, data_nb=None,
-                                           link=cross_url, content_type='application/json')
-                elif system == 'GSM':
-                    return render_template('searchCell.html', data_4g=None, data_3g=None, data_2g=cell, data_nb=None,
-                                           link=cross_url, content_type='application/json')
-                elif system == 'NB':
-                    return render_template('searchCell.html', data_4g=None, data_3g=None, data_2g=None, data_nb=cell,
-                                           link=cross_url, content_type='application/json')
+                if cell:
+                    if system == 'LTE':
+                        return render_template('searchCell.html', data_4g=cell, data_3g=None, data_2g=None,
+                                               data_nb=None, link=cross_url, content_type='application/json')
+                    elif system == 'UMTS':
+                        return render_template('searchCell.html', data_4g=None, data_3g=cell, data_2g=None,
+                                               data_nb=None, link=cross_url, content_type='application/json')
+                    elif system == 'GSM':
+                        return render_template('searchCell.html', data_4g=None, data_3g=None, data_2g=cell,
+                                               data_nb=None, link=cross_url, content_type='application/json')
+                    elif system == 'NB':
+                        return render_template('searchCell.html', data_4g=None, data_3g=None, data_2g=None,
+                                               data_nb=cell, link=cross_url, content_type='application/json')
+                else:
+                    flash('{} is not found in existing data'.format(searchParam), 'error')
+                    return render_template('searchCell.html', result=None, link=cross_url,
+                                           content_type='application/json')
         elif filterParam == 'sitecode':
             if len(searchParam) != 5:
                 flash('SiteCode: must be 5 digit length', 'site')
                 return render_template('searchCell.html', result=None, content_type='application/json')
             else:
                 cell4G, cell3G, Cell2G, CellNB = search_for_site(searchParam)
-            if cell4G and cell3G and Cell2G and CellNB:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G,
-                                       data_nb=CellNB, content_type='application/json')
-            elif cell4G and cell3G and Cell2G:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G, data_nb=None,
-                                       content_type='application/json')
-            elif cell4G and cell3G:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=None, data_nb=None,
-                                       content_type='application/json')
-            elif cell4G:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=None, data_2g=None, data_nb=None,
-                                       content_type='application/json')
+                if cell4G:
+                    if cell4G and cell3G and Cell2G and CellNB:
+                        return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G,
+                                               data_nb=CellNB, link=cross_url, content_type='application/json')
+                    elif cell4G and cell3G and Cell2G:
+                        return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G,
+                                               data_nb=None, link=cross_url, content_type='application/json')
+                    elif cell4G and cell3G:
+                        return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=None,
+                                               data_nb=None, link=cross_url, content_type='application/json')
+                    elif cell4G:
+                        return render_template('searchCell.html', data_4g=cell4G, data_3g=None, data_2g=None,
+                                               data_nb=None, link=cross_url, content_type='application/json')
+                else:
+                    flash('{} is not found in existing data'.format(searchParam), 'error')
+                    return render_template('searchCell.html', result=None, link=cross_url,
+                                           content_type='application/json')
+
         elif filterParam == 'siteconfig':
             # siteConfig search in BBU >> exists or not
             # siteConfig in 4G is eNodeBName
             # siteConfig in 3G is NodeBName
             # siteConfig in 2G and NB
             cell4G, cell3G, Cell2G, CellNB = search_for_bbu(searchParam)
-
-            if cell4G and cell3G and Cell2G and CellNB:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G,
-                                       data_nb=CellNB, content_type='application/json')
-            elif cell4G and cell3G and Cell2G:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G, data_nb=None,
-                                       content_type='application/json')
-            elif cell4G and cell3G:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=None, data_nb=None,
-                                       content_type='application/json')
-            elif cell4G:
-                return render_template('searchCell.html', data_4g=cell4G, data_3g=None, data_2g=None, data_nb=None,
-                                       content_type='application/json')
+            if cell4G:
+                if cell4G and cell3G and Cell2G and CellNB:
+                    return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G,
+                                           data_nb=CellNB, link=cross_url, content_type='application/json')
+                elif cell4G and cell3G and Cell2G:
+                    return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=Cell2G,
+                                           data_nb=None, link=cross_url, content_type='application/json')
+                elif cell4G and cell3G:
+                    return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G, data_2g=None,
+                                           data_nb=None, link=cross_url, content_type='application/json')
+                elif cell4G:
+                    return render_template('searchCell.html', data_4g=cell4G, data_3g=None, data_2g=None, data_nb=None,
+                                           link=cross_url, content_type='application/json')
+                else:
+                    return render_template('searchCell.html', data_4g=None, data_3g=None, data_2g=None, data_nb=None,
+                                           link=cross_url, content_type='application/json')
             else:
-                return render_template('searchCell.html', data_4g=None, data_3g=None, data_2g=None, data_nb=None,
+                flash('{} is not found in existing data'.format(searchParam), 'error')
+                return render_template('searchCell.html', result=None, link=cross_url,
                                        content_type='application/json')
 
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>search cell</title>
+</head>
+<body>
+<h1 class="display-3">Site-Radio</h1>
+<div class="container-fluid">
+
+    {% if result %}
+
+
+    <table id="searchCell" class="table table-hover">
+
+        <tbody>
+        <tr>
+        <thead>
+        <tr>
+            <th scope="col">postId</th>
+            <th scope="col">id</th>
+            <th scope="col">name</th>
+            <th scope="col">email</th>
+            <th scope="col">body</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in result %}
+        <tr>
+            <th scope="col">{{ row['postId']}}</th>
+            <td>{{ row['id'] }}</td>
+            <td>{{ row['name'] }}</td>
+            <td>{{ row['email'] }}</td>
+            <td>{{ row['body'] }}</td>
+        </tr>
+        </tbody>
+        {% endfor %}
+
+    </table>
+    {% endif %}
+</div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>

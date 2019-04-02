@@ -2,7 +2,9 @@ html,
 body {
     height: 100%
 }
-
+.h1, h1 {
+    margin: 0.5rem 0 3rem 1.5rem;
+}
 .input-group{
     border-radius: 3px;
     border: 1px solid black;
@@ -47,10 +49,15 @@ body {
     margin: 0px;
 }
 
+.search-submit {
+    width: 100%;
+
+}
 .col-lg-2 {
     padding-left: 0px;
     padding-right: 0px;
 }
+
 
 .form-control{
     border: 0;
@@ -104,10 +111,20 @@ hr {
 
 .custom-select {
     border: 0;
-    padding: 0;
     height: 40px;
     width: inherit;
     border-radius: 0 3px 3px 0;
+}
+
+.custom-select:active {
+   outline: none;
+    box-shadow: none;
+    background: transparent;
+}
+.custom-select:focus {
+   outline: none;
+    box-shadow: none;
+    background: transparent;
 }
 
 .head-cell {
@@ -119,4 +136,11 @@ hr {
 }
 td {
     overflow: hidden;
+}
+
+footer {
+    position: fixed;
+    height: 100px;
+    bottom: 0;
+    width: 100%;
 }

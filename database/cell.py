@@ -4,40 +4,37 @@ from config import configDB
 def list_cell4G(cellName):
     executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.enodeb_name, c.enodeb_id, c.lac, c.tac, " \
-          "c.mcc, c.mnc, c.dl_earfcn, c.duplex, c.cell_status, c.cell_txrx, c.emtc_flag, c.pci, " \
-          "s.site_name_en, s.site_name_th, s.contact_person, " \
-          "b.bbu_type," \
-          "l.latitude, l.longitude, l.routing_zone " \
+          "c.mcc, c.mnc, c.dl_earfcn, c.duplex, c.ul_earfcn, c.cell_status, c.cell_txrx, c.emtc_flag, c.pci, c.rsi, c.rspwr, " \
+          "c.emtc_flag, c.multi_type, " \
+          "a.ant_height, a.ant_model, a.physical_azimuth, a.m_tilt, a.e_tilt, ra.ant_type " \
           "FROM mp_bkk.cell4G c " \
-          "INNER JOIN (SELECT site_code, location_ref, site_name_th, site_name_en, contact_person FROM site) s " \
-          "ON c.site_code = s.site_code " \
-          "INNER JOIN (SELECT location_ref, latitude, longitude, routing_zone FROM location) l " \
-          "ON s.location_ref = l.location_ref " \
-          "LEFT JOIN (SELECT site_code, site_code_config, bbu_type FROM bbu) b " \
-          "ON s.site_code = b.site_code WHERE c.cell_name = '" + cellName + "' and " \
-                                                                            "c.enodeb_name = " \
-                                                                            "substr(b.site_code_config, 11);"
+          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell4G_antenna) ca " \
+          "ON c.cell_name = ca.cell_name " \
+          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
+          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
+          "WHERE c.cell_name = '" + cellName + "';"
     executor.cur.execute(sql)
     result = executor.cur.fetchall()
     executor.cur.close()
-
     return result
 
 
 def list_cell3G(cellName):
     executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.nodeb_name, c.nodeb_id, c.rnc, c.rnc_id, c.lac, " \
-          "c.mcc, c.mnc, c.dl_uarfcn, c.duplex, c.cell_status, c.cell_txrx, c.psc, " \
-          "s.site_name_en, s.site_name_th, s.contact_person, " \
-          "b.bbu_type," \
-          "l.latitude, l.longitude, l.routing_zone " \
+          "c.mcc, c.mnc, c.ul_uarfcn, c.dl_uarfcn, c.duplex, c.cell_status, c.cell_txrx, c.psc, " \
+          "c.multi_type, c.cpichpwr, c.max_tx_pwr, " \
+          "a.ant_height, a.ant_model, a.physical_azimuth, a.m_tilt, a.e_tilt, ra.ant_type " \
           "FROM mp_bkk.cell3G c " \
-          "INNER JOIN (SELECT site_code, location_ref, site_name_th, site_name_en, contact_person FROM site) s " \
-          "ON c.site_code = s.site_code " \
-          "INNER JOIN (SELECT location_ref, latitude, longitude, routing_zone FROM location) l " \
-          "ON s.location_ref = l.location_ref " \
-          "LEFT JOIN (SELECT site_code, site_code_config, bbu_type FROM bbu) b " \
-          "ON s.site_code = b.site_code WHERE c.cell_name = '" + cellName + "' and c.nodeb_name = site_code_config;"
+          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell4G_antenna) ca " \
+          "ON c.cell_name = ca.cell_name " \
+          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
+          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
+          "WHERE c.cell_name = '" + cellName + "';"
     executor.cur.execute(sql)
     result = executor.cur.fetchall()
     executor.cur.close()
@@ -49,18 +46,15 @@ def list_cell2G(cellName):
     executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.bts_name, c.bts_id, c.lac, c.rac, " \
           "c.bsc, c.mcc, c.mnc, c.msc, c.bsic, c.ncc, c.freq_band, c.freq_bcch, c.cell_status, " \
-          "s.site_name_en, s.site_name_th, s.contact_person, " \
-          "b.bbu_type," \
-          "l.latitude, l.longitude, l.routing_zone " \
+          "a.ant_height, a.ant_model, a.physical_azimuth, a.m_tilt, a.e_tilt, ra.ant_type " \
           "FROM mp_bkk.cell2G c " \
-          "INNER JOIN (SELECT site_code, location_ref, site_name_th, site_name_en, contact_person FROM site) s " \
-          "ON c.site_code = s.site_code " \
-          "INNER JOIN (SELECT location_ref, latitude, longitude, routing_zone FROM location) l " \
-          "ON s.location_ref = l.location_ref " \
-          "LEFT JOIN (SELECT site_code, site_code_config, bbu_type FROM bbu) b " \
-          "ON s.site_code = b.site_code WHERE c.cell_name = '" + cellName + "' and " \
-                                                                            "c.bts_name = " \
-                                                                            "substr(b.site_code_config, 11);"
+          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell4G_antenna) ca " \
+          "ON c.cell_name = ca.cell_name " \
+          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
+          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
+          "WHERE c.cell_name = '" + cellName + "';"
     executor.cur.execute(sql)
     result = executor.cur.fetchall()
     executor.cur.close()
@@ -71,19 +65,17 @@ def list_cell2G(cellName):
 def list_cellNB(cellName):
     executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.enodeb_name, c.enodeb_id, c.lac, c.tac, " \
-          "c.deployment_mode, c.lte_bw, c.dl_earfcn, c.duplex, c.cell_status, c.cell_txrx, c.pci, " \
-          "s.site_name_en, s.site_name_th, s.contact_person, " \
-          "b.bbu_type," \
-          "l.latitude, l.longitude, l.routing_zone " \
+          "c.deployment_mode, c.lte_bw, c.ul_earfcn, c.dl_earfcn, c.duplex, c.cell_status, c.cell_txrx, c.pci, " \
+          "c.rsi, c.rspwr, c.emtc_flag, c.multi_type, " \
+          "a.ant_height, a.ant_model, a.physical_azimuth, a.m_tilt, a.e_tilt, ra.ant_type " \
           "FROM mp_bkk.cellNB c " \
-          "INNER JOIN (SELECT site_code, location_ref, site_name_th, site_name_en, contact_person FROM site) s " \
-          "ON c.site_code = s.site_code " \
-          "INNER JOIN (SELECT location_ref, latitude, longitude, routing_zone FROM location) l " \
-          "ON s.location_ref = l.location_ref " \
-          "LEFT JOIN (SELECT site_code, site_code_config, bbu_type FROM bbu) b " \
-          "ON s.site_code = b.site_code WHERE c.cell_name = '" + cellName + "' and " \
-                                                                            "c.enodeb_name = " \
-                                                                            "substr(b.site_code_config, 11);"
+          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell4G_antenna) ca " \
+          "ON c.cell_name = ca.cell_name " \
+          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
+          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
+          "WHERE c.cell_name = '" + cellName + "';"
     executor.cur.execute(sql)
     result = executor.cur.fetchall()
     executor.cur.close()

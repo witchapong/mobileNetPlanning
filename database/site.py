@@ -1,8 +1,8 @@
 from config import configDB
+import logging
 
 
 def list_site4G(siteCode):
-    executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.enodeb_name, c.enodeb_id, c.lac, c.tac, " \
           "c.mcc, c.mnc, c.dl_earfcn, c.ul_earfcn, c.duplex, c.cell_status, c.cell_txrx, c.pci, c.rsi, c.rspwr, " \
           "c.emtc_flag, c.multi_type, " \
@@ -15,14 +15,10 @@ def list_site4G(siteCode):
           "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-    return result
+    return executeSQL(sql)
 
 
 def list_site3G(siteCode):
-    executor = configDB.Database()
     sql = "SELECT c.cell_name,c.site_code, c.system, c.cell_id, c.nodeb_name, c.nodeb_id, c.rnc, c.rnc_id, c.lac, " \
           "c.mcc, c.mnc, c.dl_uarfcn, c.ul_uarfcn, c.duplex, c.cell_status, c.cell_txrx, c.psc," \
           "c.multi_type, c.cpichpwr, c.max_tx_pwr, " \
@@ -35,16 +31,10 @@ def list_site3G(siteCode):
           "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
-
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-
-    return result
+    return executeSQL(sql)
 
 
 def list_site2G(siteCode):
-    executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.bts_name, c.bts_id, c.lac, c.rac, " \
           "c.bsc, c.mcc, c.mnc, c.msc, c.bsic, c.ncc, c.freq_band, c.freq_bcch, c.cell_status, " \
           "a.ant_height, a.ant_model, ra.ant_type, a.ant_height, a.physical_azimuth, a.m_tilt, a.e_tilt " \
@@ -56,15 +46,10 @@ def list_site2G(siteCode):
           "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
-
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-    return result
+    return executeSQL(sql)
 
 
 def list_siteNB(siteCode):
-    executor = configDB.Database()
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.enodeb_name, c.enodeb_id, c.lac, c.tac, " \
           "c.deployment_mode, c.lte_bw, c.ul_earfcn,c.dl_earfcn, c.duplex, c.cell_status, c.cell_txrx, c.pci," \
           "c.rsi, c.rspwr, c.multi_type, " \
@@ -78,8 +63,21 @@ def list_siteNB(siteCode):
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
 
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
+    return executeSQL(sql)
 
-    return result
+
+def executeSQL(statement):
+    executor = configDB.Database()
+    try:
+        with executor.cur:
+            executor.cur.execute(statement)
+            response = executor.cur.fetchall()
+            if len(response) > 0:
+                return response
+            else:
+                return dict()
+    except Exception as e:
+        logging.info("error from database {}".format(e))
+    finally:
+        executor.con.close()
+        logging.info("MySQL connection is closed")

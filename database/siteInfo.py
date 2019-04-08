@@ -1,11 +1,11 @@
 from config import configDB
+import logging
 
 
 #
 # Site's information 1:1
 #
 def list_siteInfo(siteCode):
-    executor = configDB.Database()
     sql = "SELECT s.site_code, l.location_code_slim, l.latitude, l.longitude, s.site_name_en, s.site_name_th, " \
           "l.location_ref_name_en, l.location_ref_name_th, l.amphur_code, l.amphur_name_en, l.region, " \
           "l.network_region, l.mc_zone, l.routing_zone, " \
@@ -17,18 +17,13 @@ def list_siteInfo(siteCode):
           "FROM location) l " \
           "ON s.location_ref = l.location_ref " \
           "WHERE s.site_code = '" + siteCode + "';"
-
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-    return result
+    return executeSQL(sql)
 
 
 #
 # BBU's information existed in Site m:1
 #
 def list_siteBBUInfo(siteCode):
-    executor = configDB.Database()
     sql = "SELECT s.site_code, b.site_code_config, b.bbu_vendor, b.bbu_type, " \
           "b.slot0, b.slot1, b.slot2, b.slot3, b.slot4, b.slot5, b.slot6, b.slot7, " \
           "b.slot16, b.slot18, b.slot19 " \
@@ -37,11 +32,7 @@ def list_siteBBUInfo(siteCode):
           "slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7, " \
           "slot16, slot18, slot19 FROM bbu) b ON s.site_code = b.site_code " \
           "WHERE s.site_code = '" + siteCode + "';"
-
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-    return result
+    return executeSQL(sql)
 
 
 #
@@ -55,17 +46,13 @@ def list_bbuInfo(siteConfig):
           "FROM bbu b " \
           "WHERE b.site_code_config like '__________" + siteConfig + "';"
 
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-    return result
+    return executeSQL(sql)
 
 
 #
 # Site's information of BBU
 #
 def list_bbuSiteInfo(siteConfig):
-    executor = configDB.Database()
     sql = "SELECT s.site_code, l.location_code_slim, l.latitude, l.longitude, s.site_name_en, s.site_name_th, " \
           "l.location_ref_name_en, l.location_ref_name_th, l.amphur_code, l.amphur_name_en, l.region, " \
           "l.network_region, l.mc_zone, l.routing_zone, " \
@@ -79,8 +66,21 @@ def list_bbuSiteInfo(siteConfig):
           "location_ref_name_th, amphur_code, amphur_name_en, region, network_region, mc_zone, routing_zone " \
           "FROM location) l ON s.location_ref = l.location_ref " \
           "WHERE b.site_code_config like '__________" + siteConfig + "';"
+    return executeSQL(sql)
 
-    executor.cur.execute(sql)
-    result = executor.cur.fetchall()
-    executor.cur.close()
-    return result
+
+def executeSQL(statement):
+    executor = configDB.Database()
+    try:
+        with executor.cur:
+            executor.cur.execute(statement)
+            response = executor.cur.fetchall()
+            if len(response) > 0:
+                return response
+            else:
+                return dict()
+    except Exception as e:
+        logging.info("error from database {}".format(e))
+    finally:
+        executor.con.close()
+        logging.info("MySQL connection is closed")

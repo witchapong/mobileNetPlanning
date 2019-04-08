@@ -2,10 +2,13 @@ html,
 body {
     height: 100%
 }
-.h1, h1 {
+
+.h1,
+h1 {
     margin: 0.5rem 0 3rem 1.5rem;
 }
-.input-group{
+
+.input-group {
     border-radius: 3px;
     border: 1px solid black;
 }
@@ -19,31 +22,33 @@ body {
 }
 
 .btn-light {
-  background: transparent !important;
-  outline: none;
-  box-shadow: none !important;
+    background: transparent !important;
+    outline: none;
+    box-shadow: none !important;
 }
 
 .btn-light:hover {
-  background: none !important;
-  outline: none;
-  box-shadow: none !important;
+    background: none !important;
+    outline: none;
+    box-shadow: none !important;
 }
 
 .btn-light:focus {
-  background: none !important;
-  outline: none;
-  box-shadow: none !important;
+    background: none !important;
+    outline: none;
+    box-shadow: none !important;
 }
 
-.btn-light:active{
-  background: none !important;
-  outline: none;
-  box-shadow: none !important;
+.btn-light:active {
+    background: none !important;
+    outline: none;
+    box-shadow: none !important;
 }
+
 .form-inline {
     width: 100%;
 }
+
 .form-group {
     width: 100%;
     margin: 0px;
@@ -53,13 +58,14 @@ body {
     width: 100%;
 
 }
+
 .col-lg-2 {
     padding-left: 0px;
     padding-right: 0px;
 }
 
 
-.form-control{
+.form-control {
     border: 0;
     padding: 0px;
     background: transparent;
@@ -87,6 +93,7 @@ body {
     border-radius: 0 2px 2px 0;
 
 }
+
 .btn-outline-success:hover {
     outline: none;
     box-shadow: none !important;
@@ -103,10 +110,10 @@ body {
 }
 
 hr {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  border: 0;
-  border-top: 5px solid #5cb85c;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border: 0;
+    border-top: 5px solid #5cb85c;
 }
 
 .custom-select {
@@ -117,12 +124,13 @@ hr {
 }
 
 .custom-select:active {
-   outline: none;
+    outline: none;
     box-shadow: none;
     background: transparent;
 }
+
 .custom-select:focus {
-   outline: none;
+    outline: none;
     box-shadow: none;
     background: transparent;
 }
@@ -131,9 +139,11 @@ hr {
     font-size: 13px;
     text-transform: uppercase;
 }
+
 .cell {
     font-size: 12px;
 }
+
 td {
     overflow: hidden;
 }

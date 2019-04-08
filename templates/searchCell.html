@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <title>Search Data</title>
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../static/css/main.css">
@@ -14,12 +13,6 @@
         .fixed-bottom {
            font-size: 14px
         }
-
-
-
-
-
-
     </style>
 </head>
 <body>
@@ -94,17 +87,23 @@
     </div>
     {% endfor %}
     {% endif %}
-    {% endwith %}
+    {% endwith -%}
 
-
-    {% if resSearch %}
+    {% if resSearch -%}
     {% set data_site = resSearch['siteCode'] %}
     {% set data_bbu = resSearch['siteConfig'] %}
     {% set data_4g = resSearch['cell4G'] %}
-    {{ data_4g }}
     {% set data_3g = resSearch['cell3G'] %}
-    <button class="btn btn-primary active" onclick="test_func({{ data }})"> Button</button>
-    {% endif %}
+    {% set data_2g = resSearch['cell2G'] %}
+    {% set data_nb = resSearch['cellNB'] %}
+
+    <div class="row" style="float: right;margin-right: 15px;">
+        <button class="btn btn-info"
+                onclick="test_func({{ resSearch }})">
+            <span class="">Download .Excel</span>
+        </button>
+    </div>
+    {%- endif %}
 
     <!--  site information  -->
     <div class="table-responsive text-nowrap" style="margin-bottom:2rem;">
@@ -577,9 +576,49 @@
     <script type="text/javascript" src="../static/js/js-xlsx-0.14.0/dist/xlsx.full.min.js"></script>
     <script type="text/javascript">
        function test_func(dataIn) {
-            console.log(dataIn)
-            var lte = dataIn['cell4G']
-            console.log(lte)
+            function isEmptyObj(arg) {
+                if (jQuery.isEmptyObject(arg)) {
+                    arg = [{}];
+                    return arg;
+                }else {
+                    return arg;
+                }
+            }
+            let site = isEmptyObj(dataIn.siteCode);
+            let bbu = isEmptyObj(dataIn.siteConfig);
+            let lte =  isEmptyObj(dataIn.cell4G);
+            let umts =  isEmptyObj(dataIn.cell3G);
+            let gsm =  isEmptyObj(dataIn.cell2G);
+            let nb =  isEmptyObj(dataIn.cellNB);
+            var wb = XLSX.utils.book_new();
+                wb.Props = {
+                            Title: "Export Masterplan",
+                            Subject: "PRE TEST",
+                            CreatedDate: new Date(2019,04 ,06)
+                    };
+                wb.SheetNames.push("SITE");
+                wb.SheetNames.push("BBU");
+                wb.SheetNames.push("CELL LTE");
+                wb.SheetNames.push("CELL UMTS");
+                wb.SheetNames.push("CELL GSM");
+                wb.SheetNames.push("CELL NB");
+
+                wb.Sheets["SITE"] = XLSX.utils.json_to_sheet(site);
+                wb.Sheets["BBU"] = XLSX.utils.json_to_sheet(bbu);
+                wb.Sheets["CELL LTE"] = XLSX.utils.json_to_sheet(lte);
+                wb.Sheets["CELL UMTS"] = XLSX.utils.json_to_sheet(umts);
+                wb.Sheets["CELL GSM"] = XLSX.utils.json_to_sheet(gsm);
+                wb.Sheets["CELL NB"] = XLSX.utils.json_to_sheet(nb);
+
+                var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+                function s2ab(s) {
+                            var buf = new ArrayBuffer(s.length);
+                            var view = new Uint8Array(buf);
+                            for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                            return buf;
+                }
+                saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'post_test.xlsx');
        }
 
     </script>

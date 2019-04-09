@@ -8,11 +8,11 @@ def list_site4G(siteCode):
           "c.emtc_flag, c.multi_type, " \
           "a.ant_height, a.ant_model, ra.ant_type, a.ant_height, a.physical_azimuth, a.m_tilt, a.e_tilt " \
           "FROM mp_bkk.cell4G c " \
-          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell4G_antenna) ca " \
+          "LEFT JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell4G_antenna) ca " \
           "ON c.cell_name = ca.cell_name " \
-          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "LEFT JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
           "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
-          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "LEFT JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
     return executeSQL(sql)
@@ -24,11 +24,11 @@ def list_site3G(siteCode):
           "c.multi_type, c.cpichpwr, c.max_tx_pwr, " \
           "a.ant_height, a.ant_model, ra.ant_type, a.ant_height, a.physical_azimuth, a.m_tilt, a.e_tilt " \
           "FROM mp_bkk.cell3G c " \
-          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell3G_antenna) ca " \
+          "LEFT JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell3G_antenna) ca " \
           "ON c.cell_name = ca.cell_name " \
-          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "LEFT JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
           "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
-          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "LEFT JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
     return executeSQL(sql)
@@ -39,11 +39,11 @@ def list_site2G(siteCode):
           "c.bsc, c.mcc, c.mnc, c.msc, c.bsic, c.ncc, c.freq_band, c.freq_bcch, c.cell_status, " \
           "a.ant_height, a.ant_model, ra.ant_type, a.ant_height, a.physical_azimuth, a.m_tilt, a.e_tilt " \
           "FROM mp_bkk.cell2G c " \
-          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell2G_antenna) ca " \
+          "LEFT JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cell2G_antenna) ca " \
           "ON c.cell_name = ca.cell_name " \
-          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "LEFT JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
           "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
-          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "LEFT JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
     return executeSQL(sql)
@@ -55,11 +55,11 @@ def list_siteNB(siteCode):
           "c.rsi, c.rspwr, c.multi_type, " \
           "a.ant_height, a.ant_model, ra.ant_type, a.ant_height, a.physical_azimuth, a.m_tilt, a.e_tilt " \
           "FROM mp_bkk.cellNB c " \
-          "INNER JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cellNB_antenna) ca " \
+          "LEFT JOIN (SELECT cell_name, ant_id, ant_logical_beam FROM cellNB_antenna) ca " \
           "ON c.cell_name = ca.cell_name " \
-          "INNER JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
+          "LEFT JOIN (SELECT ant_id, ant_logical_beam, ant_model, m_tilt, e_tilt, physical_azimuth, ant_height " \
           "FROM antenna) a ON ca.ant_id = a.ant_id AND ca.ant_logical_beam = a.ant_logical_beam " \
-          "INNER JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
+          "LEFT JOIN (SELECT ant_model, ant_logical_beam, ant_type " \
           "FROM reference_antenna) ra ON a.ant_model = ra.ant_model AND a.ant_logical_beam = ra.ant_logical_beam " \
           "WHERE c.site_code = '" + siteCode + "';"
 

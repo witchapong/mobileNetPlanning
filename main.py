@@ -138,142 +138,6 @@ def search_cell():
     return render_template("searchCell.html", link=config.configURL.URL)
 
 
-@app.route('/searchAlpha', methods=['GET', 'POST'])
-def search_data_alpha():
-    if request.method == 'POST':
-        filterParam = request.form.get('filterBy')
-        searchParam = request.form.get('searchValue')
-        if not (filterParam.capitalize() == 'Search'):
-            if filterParam == 'cellname':
-                if len(searchParam) != 10:
-                    flash('Cellname: must be 10 digit length', 'cell')
-                    return render_template('searchCell.html', result=None, link=config.configURL.URL,
-                                           content_type='application/json')
-                else:
-                    cellRes, system = None, None
-                    if cellRes:
-                        site = siteInfo.list_siteInfo(cellRes[0]['site_code'])
-                        if site:
-                            if system == 'LTE':
-                                bbu = siteInfo.list_bbuInfo(cellRes[0]['enodeb_name'])
-                                return render_template('searchCell.html', data_4g=cellRes, data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, content_type='application/json')
-                            elif system == 'UMTS':
-                                bbu = siteInfo.list_bbuInfo(cellRes[0]['nodeb_name'])
-                                return render_template('searchCell.html', data_3g=cellRes, data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, content_type='application/json')
-                            elif system == 'GSM':
-                                bbu = siteInfo.list_bbuInfo(cellRes[0]['bts_name'])
-                                return render_template('searchCell.html', data_2g=cellRes,
-                                                       data_site=site, data_bbu=bbu, link=config.configURL.URL,
-                                                       content_type='application/json')
-                            elif system == 'NB':
-                                bbu = siteInfo.list_bbuInfo(cellRes[0]['enodeb_name'])
-                                return render_template('searchCell.html', data_nb=cellRes, data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, content_type='application/json')
-                        else:
-                            flash('Not found Site or BBU of cellName {}'.format(filterParam), 'error')
-                            return render_template('searchCell.html', link=config.configURL.URL,
-                                                   content_type='application/json')
-                    else:
-                        flash('{} is not found in existing data'.format(searchParam), 'error')
-                        return render_template('searchCell.html', link=config.configURL.URL,
-                                               content_type='application/json')
-            elif filterParam == 'sitecode':
-                if len(searchParam) != 5:
-                    flash('SiteCode: must be 5 digit length', 'site')
-                    return render_template('searchCell.html', result=None, content_type='application/json')
-
-                else:
-                    site = search_siteInfo(searchSite=searchParam, search_type='site')
-                    bbu = search_bbuInfo(searchSiteConfig=searchParam, search_type='site')
-                    if site:
-                        if not bbu:
-                            bbu = None
-                        cell4G, cell3G, cell2G, cellNB = search_for_site(searchParam)
-                        cells = cell4G + cell3G + cell2G + cellNB
-                        cells = {'4G': cell4G, '3G': cell3G}
-                        if cell4G:
-                            if cell4G and cell3G and cell2G and cellNB:
-                                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G,
-                                                       data_2g=cell2G,
-                                                       data_nb=cellNB, data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, data=cells,
-                                                       content_type='application/json')
-                            elif cell4G and cell3G and cell2G:
-                                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G,
-                                                       data_2g=cell2G,
-                                                       data_site=site, link=config.configURL.URL,
-                                                       content_type='application/json')
-                            elif cell4G and cell3G:
-                                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G,
-                                                       data_site=site,
-                                                       data_bbu=bbu, link=config.configURL.URL,
-                                                       content_type='application/json')
-                            elif cell4G:
-                                return render_template('searchCell.html', data_4g=cell4G, data_site=site,
-                                                       data_bbu=bbu, link=config.configURL.URL,
-                                                       content_type='application/json')
-                        else:
-                            flash('{} not found BBU existing data'.format(filterParam), 'error')
-                            return render_template('searchCell.html', data_site=site, data_bbu=bbu,
-                                                   link=config.configURL.URL,
-                                                   content_type='application/json')
-                    else:
-                        flash('{} is not found in existing data'.format(filterParam), 'error')
-                        return render_template('searchCell.html', link=config.configURL.URL,
-                                               content_type='application/json')
-            elif filterParam == 'siteconfig':
-                # siteConfig search in BBU >> exists or not
-                # siteConfig in 4G is eNodeBName
-                # siteConfig in 3G is NodeBName
-                # siteConfig in 2G and NB
-                bbu = search_bbuInfo(searchSiteConfig=searchParam, search_type='bbu')
-                if bbu:
-                    site = search_siteInfo(searchSite=searchParam, search_type='bbu')
-                    if site:
-                        cell4G, cell3G, Cell2G, CellNB = search_for_bbu(searchParam)
-                        if cell4G:
-                            if cell4G and cell3G and Cell2G and CellNB:
-                                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G,
-                                                       data_2g=Cell2G,
-                                                       data_site=site, data_bbu=bbu,
-                                                       data_nb=CellNB, link=config.configURL.URL,
-                                                       content_type='application/json')
-                            elif cell4G and cell3G and Cell2G:
-                                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G,
-                                                       data_2g=Cell2G,
-                                                       data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, content_type='application/json')
-                            elif cell4G and cell3G:
-                                return render_template('searchCell.html', data_4g=cell4G, data_3g=cell3G,
-                                                       data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, content_type='application/json')
-                            elif cell4G:
-                                return render_template('searchCell.html', data_4g=cell4G,
-                                                       data_site=site, data_bbu=bbu,
-                                                       link=config.configURL.URL, content_type='application/json')
-                            else:
-                                return render_template('searchCell.html', link=config.configURL.URL,
-                                                       content_type='application/json')
-                        else:
-                            flash('{} is not found in existing data'.format(searchParam), 'error')
-                            return render_template('searchCell.html', result=None, link=config.configURL.URL,
-                                                   content_type='application/json')
-                    else:
-                        flash('{} not found Site in existing data'.format(filterParam), 'error')
-                        return render_template('searchCell.html', link=config.configURL.URL,
-                                               content_type='application/json')
-                else:
-                    flash('{} is not found in existing data'.format(filterParam), 'error')
-                    return render_template('searchCell.html', link=config.configURL.URL,
-                                           content_type='application/json')
-        else:
-            flash('Search option is unselected', 'search')
-            return render_template('searchCell.html', link=config.configURL.URL,
-                                   content_type='application/json')
-
-
 @app.route('/search', methods=['GET', 'POST'])
 def search_data_beta():
     if request.method == 'POST':
@@ -369,7 +233,7 @@ def search_siteInfo(searchSite, search_type):
 #
 def search_bbuInfo(searchSiteConfig, search_type):
     if search_type == 'bbu':
-        bbu = siteInfo.list_bbuInfo(siteConfig=searchSiteConfig)
+        bbu = siteInfo.list_bbuInfo(siteConfig=searchSiteConfig, system=None)
         bbuDict = {'siteConfig': bbu}
         return bbuDict
     elif search_type == 'site':
@@ -412,7 +276,7 @@ def search_for_cellName(cellName):
             system = 'cell2G'
     if cell:
         site = siteInfo.list_siteInfo(siteCode=cell[0]['site_code'])
-        bbu = siteInfo.list_bbuInfo(siteConfig=cell[0][systemDict.get(system)])
+        bbu = siteInfo.list_bbuInfo(siteConfig=cell[0][systemDict.get(system)], system=system)
     else:
         site, bbu = None, None
     preCell = {system: cell}

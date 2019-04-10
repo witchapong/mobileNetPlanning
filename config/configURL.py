@@ -1,3 +1,10 @@
+class URL:
+    rpm = 'https://ran.intra.ais/'
+    slims = 'http://10.217.243.201:9180/slims/login.jsf'
+    transporter = 'https://www.transporter.ais.co.th/TPTWeb/'
+    troubleTicket = 'https://troubleticket.ais.co.th/TTSWeb/'
+
+
 class Download:
     son_4g = 'http://10.172.240.110/bkk/downloadfile/son/4G/son_4g'
     son_3g = 'http://10.172.240.110/bkk/downloadfile/son/3G/son_3g'

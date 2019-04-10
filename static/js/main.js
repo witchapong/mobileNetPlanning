@@ -4,7 +4,6 @@ $(document).ready(function() {
 
     // plan button event
     $('.btn.btn-warning').click(function() {
-
       // check if the parameters are filled
       if ($('#rCol').val()!="" && $('#rMod3').val()!="" && $('#rMin').val()!=""){
           $.ajax({

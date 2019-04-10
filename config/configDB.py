@@ -1,19 +1,31 @@
 import pymysql
 
 
+class Development:
+    host = "127.0.0.1"
+    user = "root"
+    password = "root"
+    db = "mp_bkk"
+    port = 8889
+
+
+class Production:
+    host = "127.0.0.1"
+    user = "root"
+    password = "root"
+    db = "mp_bkk"
+    port = 8889
+
+
 class Database:
     def __init__(self):
-        host = "127.0.0.1"
-        user = "root"
-        password = "root"
-        db = "mp_bkk"
-        port = 8889
-        self.con = pymysql.connect(host=host,
-                                   user=user,
-                                   password=password,
-                                   db=db,
-                                   port=port,
+        config = Development()  # set configuration environment
+        self.con = pymysql.connect(host=config.host,
+                                   user=config.user,
+                                   password=config.password,
+                                   db=config.db,
+                                   port=config.port,
                                    cursorclass=pymysql.cursors.
-                                   DictCursor)
+                                   DictCursor)  # connection object
 
-        self.cur = self.con.cursor()
+        self.cur = self.con.cursor()  # cursor object

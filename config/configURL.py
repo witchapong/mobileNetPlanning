@@ -12,5 +12,5 @@ class Download:
     prs_3g = 'http://10.172.240.110/bkk/downloadfile/prs/3G/prs_3g'
     nastar_ran_4g = 'http://10.172.240.110/bkk/downloadfile/nastarran/4G/nastar_ran_4g'
     nastar_ran_3g = 'http://10.172.240.110/bkk/downloadfile/nastarran/3G/nastar_ran_3g'
-    nastar = 'http://10.172.240.110/bkk/downloadfile/nastar/nastar'
+    nastar_ran = 'http://10.172.240.110/bkk/downloadfile/nastar/nastar'
     cellinfo = 'http://10.172.240.110/bkk/downloadfile/cellinfo/cellinfo'

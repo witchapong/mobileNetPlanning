@@ -12,14 +12,6 @@
         .fixed-bottom {
            font-size: 14px
         }
-        .my-custom-scrollbar {
-            position: relative;
-            max-height: 400px;
-            overflow: auto;
-        }
-        .table-wrapper-scroll-y {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -29,15 +21,15 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 mx-auto">
                 <div class="input-group mb-3">
-                    <form role="form" action="{{url_for('search_data_gamma')}}" class="form-inline"
+                    <form role="form" action="{{url_for('search_data_beta')}}" class="form-inline"
                           method="POST" enctype=multipart/form-data>
                         <div class="form-group row">
                             <div class="search-submit col-lg-2 ">
                                 <select class="custom-select" id="filterBy" name="filterBy">
                                     <option selected>Search</option>
-                                    <option value="cellname">CellName</option>
-                                    <option value="sitecode">SiteCode</option>
-                                    <option value="siteconfig">SiteConfig</option>
+                                    <option value="cellid">CellName</option>
+                                    <option value="nodebid">SiteCode</option>
+                                    <option value="enodebid">SiteConfig</option>
                                 </select>
                             </div>
                             <div class="col-lg-8 ">
@@ -74,13 +66,6 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        {% elif category == 'bbu' %}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>SiteConfig</strong> must be <strong>equal to SiteCode</strong> or other with distributed number
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
         {% elif category == 'error' %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>Not found information</strong>, please check your input again -
@@ -90,17 +75,9 @@
             </button>
         </div>
         {% elif category == 'search' %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>Error</strong>: please check your input again -
             <span><strong> {{message}} </strong></span>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% elif category == 'overlimit' %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error</strong>: Searching Maximum Value is :
-            <span><strong> {{message}} </strong></span> code
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -241,164 +218,160 @@
 
     <!--  LTE information  -->
     {% if data_4g %}
-    <div class="table-wrapper-scroll-y my-custom-scrollbar" style="margin-bottom:2rem;">
-        <div class="table-responsive text-nowrap" style="margin-bottom:2rem;">
-            <h3>LTE</h3>
-            <table id="searchCell4G" class="table table-hover table-fixed">
-                <thead>
-                <tr class="head-cell">
-                    <th scope="col">CELLNAME</th>
-                    <th scope="col">STATUS</th>
-                    <th scope="col">SITE</th>
-                    <th scope="col">SYSTEM</th>
-                    <th scope="col">CELLID</th>
-                    <th scope="col">ENODEB</th>
-                    <th scope="col">ENODEBID</th>
-                    <th scope="col">LAC</th>
-                    <th scope="col">TAC</th>
-                    <th scope="col">MCC</th>
-                    <th scope="col">MNC</th>
-                    <th scope="col">DL EARFCN</th>
-                    <th scope="col">UL EARFCN</th> <!-- adding-->
-                    <th scope="col">DUPLEX</th>
-                    <th scope="col">PCI</th>
-                    <th scope="col">RSI</th> <!-- adding-->
-                    <th scope="col">TXRX</th>
-                    <th scope="col">EMTC</th>
-                    <th scope="col">MULTI TYPE</th> <!-- adding-->
-                    <th scope="col">RS POWER</th> <!-- adding-->
-                    <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
-                    <th scope="col">ANTENNA MODEL</th> <!-- adding-->
-                    <th scope="col">ANTENNA TYPE</th> <!-- adding-->
-                    <th scope="col">AZIMUTH</th> <!-- adding-->
-                    <th scope="col">M-TILT</th> <!-- adding-->
-                    <th scope="col">E-TILT</th> <!-- adding-->
-                </thead>
-                {% for row in data_4g %}
-                <tr class="cell">
-                    <td>{{ row.cell_name }}</td>
-                    {% if row.cell_status == 'No' %}
-                    <td class="table-primary">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Yes' %}
-                    <td class="table-success">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Locked' %}
-                    <td class="table-warning">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Removed' %}
-                    <td class="table-danger">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Relocated' %}
-                    <td class="table-info">{{ row.cell_status }}</td>
-                    {% endif %}
-                    <td>{{ row.site_code }}</td>
-                    <td>{{ row.system }}</td>
-                    <td>{{ row.cell_id }}</td>
-                    <td>{{ row.enodeb_name }}</td>
-                    <td>{{ row.enodeb_id }}</td>
-                    <td>{{ row.lac }}</td>
-                    <td>{{ row.tac }}</td>
-                    <td>{{ row.mcc }}</td>
-                    <td>{{ row.mnc }}</td>
-                    <td>{{ row.dl_earfcn }}</td>
-                    <td>{{ row.ul_earfcn }}</td>
-                    <td>{{ row.duplex }}</td>
-                    <td>{{ row.pci }}</td>
-                    <td>{{ row.rsi }}</td>
-                    <td>{{ row.cell_txrx }}</td>
-                    <td>{{ row.emtc_flag }}</td>
-                    <td>{{ row.multi_type }}</td>
-                    <td>{{ row.rspwr }}</td>
-                    <td>{{ row.ant_height }}</td>
-                    <td>{{ row.ant_model }}</td>
-                    <td>{{ row.ant_type }}</td>
-                    <td>{{ row.physical_azimuth }}</td>
-                    <td>{{ row.m_tilt }}</td>
-                    <td>{{ row.e_tilt }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <div class="table-responsive text-nowrap" style="margin-bottom:2rem;">
+        <h3>LTE</h3>
+        <table id="searchCell4G" class="table table-hover table-fixed">
+            <thead>
+            <tr class="head-cell">
+                <th scope="col">CELLNAME</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">SITE</th>
+                <th scope="col">SYSTEM</th>
+                <th scope="col">CELLID</th>
+                <th scope="col">ENODEB</th>
+                <th scope="col">ENODEBID</th>
+                <th scope="col">LAC</th>
+                <th scope="col">TAC</th>
+                <th scope="col">MCC</th>
+                <th scope="col">MNC</th>
+                <th scope="col">DL EARFCN</th>
+                <th scope="col">UL EARFCN</th> <!-- adding-->
+                <th scope="col">DUPLEX</th>
+                <th scope="col">PCI</th>
+                <th scope="col">RSI</th> <!-- adding-->
+                <th scope="col">TXRX</th>
+                <th scope="col">EMTC</th>
+                <th scope="col">MULTI TYPE</th> <!-- adding-->
+                <th scope="col">RS POWER</th> <!-- adding-->
+                <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
+                <th scope="col">ANTENNA MODEL</th> <!-- adding-->
+                <th scope="col">ANTENNA TYPE</th> <!-- adding-->
+                <th scope="col">AZIMUTH</th> <!-- adding-->
+                <th scope="col">M-TILT</th> <!-- adding-->
+                <th scope="col">E-TILT</th> <!-- adding-->
+            </thead>
+            {% for row in data_4g %}
+            <tr class="cell">
+                <td>{{ row.cell_name }}</td>
+                {% if row.cell_status == 'No' %}
+                <td class="table-primary">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Yes' %}
+                <td class="table-success">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Locked' %}
+                <td class="table-warning">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Removed' %}
+                <td class="table-danger">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Relocated' %}
+                <td class="table-info">{{ row.cell_status }}</td>
+                {% endif %}
+                <td>{{ row.site_code }}</td>
+                <td>{{ row.system }}</td>
+                <td>{{ row.cell_id }}</td>
+                <td>{{ row.enodeb_name }}</td>
+                <td>{{ row.enodeb_id }}</td>
+                <td>{{ row.lac }}</td>
+                <td>{{ row.tac }}</td>
+                <td>{{ row.mcc }}</td>
+                <td>{{ row.mnc }}</td>
+                <td>{{ row.dl_earfcn }}</td>
+                <td>{{ row.ul_earfcn }}</td>
+                <td>{{ row.duplex }}</td>
+                <td>{{ row.pci }}</td>
+                <td>{{ row.rsi }}</td>
+                <td>{{ row.cell_txrx }}</td>
+                <td>{{ row.emtc_flag }}</td>
+                <td>{{ row.multi_type }}</td>
+                <td>{{ row.rspwr }}</td>
+                <td>{{ row.ant_height }}</td>
+                <td>{{ row.ant_model }}</td>
+                <td>{{ row.ant_type }}</td>
+                <td>{{ row.physical_azimuth }}</td>
+                <td>{{ row.m_tilt }}</td>
+                <td>{{ row.e_tilt }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
     {% endif %}
 
     <!--  UMTS information  -->
     {% if data_3g %}
-    <div class="table-wrapper-scroll-y my-custom-scrollbar" style="margin-bottom:3.5rem;">
-        <div class="table-responsive text-nowrap" style="margin-bottom:3.5rem;">
-            <h3 style="margin-top: 5px;">UMTS</h3>
-            <table id="searchCell3G" class="table table-hover table-fixed">
-                <thead>
-                <tr class="head-cell">
-                    <th scope="col">CELLNAME</th>
-                    <th scope="col">STATUS</th>
-                    <th scope="col">SITE</th>
-                    <th scope="col">SYSTEM</th>
-                    <th scope="col">CELLID</th>
-                    <th scope="col">NODEB</th>
-                    <th scope="col">NODEBID</th>
-                    <th scope="col">RNC</th>
-                    <th scope="col">RNCID</th>
-                    <th scope="col">LAC</th>
-                    <th scope="col">MCC</th>
-                    <th scope="col">MNC</th>
-                    <th scope="col">DL UARFCN</th>
-                    <th scope="col">UL UARFCN</th> <!-- adding-->
-                    <th scope="col">DUPLEX</th>
-                    <th scope="col">PSC</th>
-                    <th scope="col">TXRX</th>
-                    <th scope="col">MULTI TYPE</th> <!-- adding-->
-                    <th scope="col">CPICH</th> <!-- adding-->
-                    <th scope="col">MAX TX</th> <!-- adding-->
-                    <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
-                    <th scope="col">ANTENNA MODEL</th> <!-- adding-->
-                    <th scope="col">ANTENNA TYPE</th> <!-- adding-->
-                    <th scope="col">AZIMUTH</th> <!-- adding-->
-                    <th scope="col">M-TILT</th> <!-- adding-->
-                    <th scope="col">E-TILT</th> <!-- adding-->
-                </thead>
-                {% for row in data_3g %}
-                <tr class="cell">
-                    <td>{{ row.cell_name }}</td>
-                    {% if row.cell_status == 'No' %}
-                    <td class="table-primary">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Yes' %}
-                    <td class="table-success">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Locked' %}
-                    <td class="table-warning">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Removed' %}
-                    <td class="table-danger">{{ row.cell_status }}</td>
-                    {% elif row.cell_status == 'Relocated' %}
-                    <td class="table-info">{{ row.cell_status }}</td>
-                    {% endif %}
-                    <td>{{ row.site_code }}</td>
-                    <td>{{ row.system }}</td>
-                    <td>{{ row.cell_id }}</td>
-                    <td>{{ row.nodeb_name }}</td>
-                    <td>{{ row.nodeb_id }}</td>
-                    <td>{{ row.rnc }}</td>
-                    <td>{{ row.rnc_id }}</td>
-                    <td>{{ row.lac }}</td>
-                    <td>{{ row.mcc }}</td>
-                    <td>{{ row.mnc }}</td>
-                    <td>{{ row.dl_uarfcn }}</td>
-                    <td>{{ row.ul_uarfcn }}</td>
+    <div class="table-responsive text-nowrap" style="margin-bottom:3.5rem;">
+        <h3 style="margin-top: 5px;">UMTS</h3>
+        <table id="searchCell3G" class="table table-hover table-fixed">
+            <thead>
+            <tr class="head-cell">
+                <th scope="col">CELLNAME</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">SITE</th>
+                <th scope="col">SYSTEM</th>
+                <th scope="col">CELLID</th>
+                <th scope="col">NODEB</th>
+                <th scope="col">NODEBID</th>
+                <th scope="col">RNC</th>
+                <th scope="col">RNCID</th>
+                <th scope="col">LAC</th>
+                <th scope="col">MCC</th>
+                <th scope="col">MNC</th>
+                <th scope="col">DL UARFCN</th>
+                <th scope="col">UL UARFCN</th> <!-- adding-->
+                <th scope="col">DUPLEX</th>
+                <th scope="col">PSC</th>
+                <th scope="col">TXRX</th>
+                <th scope="col">MULTI TYPE</th> <!-- adding-->
+                <th scope="col">CPICH</th> <!-- adding-->
+                <th scope="col">MAX TX</th> <!-- adding-->
+                <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
+                <th scope="col">ANTENNA MODEL</th> <!-- adding-->
+                <th scope="col">ANTENNA TYPE</th> <!-- adding-->
+                <th scope="col">AZIMUTH</th> <!-- adding-->
+                <th scope="col">M-TILT</th> <!-- adding-->
+                <th scope="col">E-TILT</th> <!-- adding-->
+            </thead>
+            {% for row in data_3g %}
+            <tr class="cell">
+                <td>{{ row.cell_name }}</td>
+                {% if row.cell_status == 'No' %}
+                <td class="table-primary">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Yes' %}
+                <td class="table-success">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Locked' %}
+                <td class="table-warning">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Removed' %}
+                <td class="table-danger">{{ row.cell_status }}</td>
+                {% elif row.cell_status == 'Relocated' %}
+                <td class="table-info">{{ row.cell_status }}</td>
+                {% endif %}
+                <td>{{ row.site_code }}</td>
+                <td>{{ row.system }}</td>
+                <td>{{ row.cell_id }}</td>
+                <td>{{ row.nodeb_name }}</td>
+                <td>{{ row.nodeb_id }}</td>
+                <td>{{ row.rnc }}</td>
+                <td>{{ row.rnc_id }}</td>
+                <td>{{ row.lac }}</td>
+                <td>{{ row.mcc }}</td>
+                <td>{{ row.mnc }}</td>
+                <td>{{ row.dl_uarfcn }}</td>
+                <td>{{ row.ul_uarfcn }}</td>
 
-                    <td>{{ row.duplex }}</td>
-                    <td>{{ row.psc }}</td>
-                    <td>{{ row.cell_txrx }}</td>
-                    <td>{{ row.multi_type }}</td>
+                <td>{{ row.duplex }}</td>
+                <td>{{ row.psc }}</td>
+                <td>{{ row.cell_txrx }}</td>
+                <td>{{ row.multi_type }}</td>
 
-                    <td>{{ row.cpichpwr }}</td>
-                    <td>{{ row.max_tx_pwr }}</td>
-                    <td>{{ row.ant_height }}</td>
-                    <td>{{ row.ant_model }}</td>
-                    <td>{{ row.ant_type }}</td>
-                    <td>{{ row.physical_azimuth }}</td>
-                    <td>{{ row.m_tilt }}</td>
-                    <td>{{ row.e_tilt }}</td>
+                <td>{{ row.cpichpwr }}</td>
+                <td>{{ row.max_tx_pwr }}</td>
+                <td>{{ row.ant_height }}</td>
+                <td>{{ row.ant_model }}</td>
+                <td>{{ row.ant_type }}</td>
+                <td>{{ row.physical_azimuth }}</td>
+                <td>{{ row.m_tilt }}</td>
+                <td>{{ row.e_tilt }}</td>
 
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
     {% endif %}
 
@@ -649,15 +622,6 @@
                 }
                 saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'post_test.xlsx');
        }
-
-
-
-
-
-
-
-
-
 
     </script>
 </div>

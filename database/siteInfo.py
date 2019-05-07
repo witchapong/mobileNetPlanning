@@ -2,6 +2,15 @@ from config import configDB
 import logging
 
 
+def multiple_search(siteBBU):
+    new_siteBBU = []
+    for i in siteBBU:
+        # new_siteBBU.append(' b.site_code_config like ' + '\'__________' + i + '\'')
+        new_siteBBU.append(' b.site_code_config like \'__________{}\''.format(i))
+
+    return ' or '.join('{}'.format(s) for s in new_siteBBU)
+
+
 #
 # Site's information 1:1
 #
@@ -16,7 +25,7 @@ def list_siteInfo(siteCode):
           "location_ref_name_th, amphur_code, amphur_name_en, region, network_region, mc_zone, routing_zone " \
           "FROM location) l " \
           "ON s.location_ref = l.location_ref " \
-          "WHERE s.site_code = '" + siteCode + "';"
+          "WHERE s.site_code in " + siteCode + ";"
     return executeSQL(sql)
 
 
@@ -31,26 +40,27 @@ def list_siteBBUInfo(siteCode):
           "INNER JOIN(SELECT site_code_config, site_code, bbu_vendor, bbu_type, " \
           "slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7, " \
           "slot16, slot18, slot19 FROM bbu) b ON s.site_code = b.site_code " \
-          "WHERE s.site_code = '" + siteCode + "';"
+          "WHERE s.site_code in " + siteCode + ";"
     return executeSQL(sql)
 
 
 #
 # BBU's information 1:1
 #
-def list_bbuInfo(siteConfig, system):
-    global searchStatement
-    if system in ['cell4G', 'cell2G', 'cellNB']:
-        searchStatement = " like '__________" + siteConfig + "';"""
-    elif system == 'cell3G':
-        searchStatement = " = '" + siteConfig + "';"""
-    else:
-        searchStatement = " like '__________" + siteConfig + "%';"""
+# search by nodeName in System
+def list_bbuInfo(siteConfig):
+    # global searchStatement
+    # if system in ['cell4G', 'cell2G', 'cellNB']:
+    #     searchStatement = " like '__________" + siteConfig + "';"""
+    # elif system == 'cell3G':
+    #     searchStatement = " = '" + siteConfig + "';"""
+    # else:
+    #     searchStatement = multiple_search(siteConfig)
     sql = "SELECT b.site_code_config, b.site_code, b.bbu_vendor, b.bbu_type, " \
           "b.slot0, b.slot1, b.slot2, b.slot3, b.slot4, b.slot5, b.slot6, b.slot7, " \
           "b.slot16, b.slot18, b.slot19 " \
           "FROM bbu b " \
-          "WHERE b.site_code_config" + searchStatement
+          "WHERE" + multiple_search(siteConfig) + ";"""
     return executeSQL(sql)
 
 
@@ -70,7 +80,7 @@ def list_bbuSiteInfo(siteConfig):
           "INNER JOIN(SELECT location_ref, location_code_slim, latitude, longitude, location_ref_name_en, " \
           "location_ref_name_th, amphur_code, amphur_name_en, region, network_region, mc_zone, routing_zone " \
           "FROM location) l ON s.location_ref = l.location_ref " \
-          "WHERE b.site_code_config like '__________" + siteConfig + "';"
+          "WHERE " + multiple_search(siteConfig) + ";"""
     return executeSQL(sql)
 
 

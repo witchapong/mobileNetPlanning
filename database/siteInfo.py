@@ -45,7 +45,8 @@ def list_bbuInfo(siteConfig, system):
     elif system == 'cell3G':
         searchStatement = " = '" + siteConfig + "';"""
     else:
-        searchStatement = " like '__________" + siteConfig + "%';"""
+        # TODO: only 1 siteConfig
+        searchStatement = " like '__________" + siteConfig + "%';"""  # SCT2P_whatever?
     sql = "SELECT b.site_code_config, b.site_code, b.bbu_vendor, b.bbu_type, " \
           "b.slot0, b.slot1, b.slot2, b.slot3, b.slot4, b.slot5, b.slot6, b.slot7, " \
           "b.slot16, b.slot18, b.slot19 " \

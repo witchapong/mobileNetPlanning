@@ -7,8 +7,8 @@
     <meta name="author" content="">
     <title>Download Data</title>
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='library/bootstrap.min.css')}}">
+
     <style>
         .fixed-bottom {
             font-size: 14px
@@ -16,6 +16,7 @@
         .list-group-flush{
             font-size: 14px
         }
+
     </style>
 </head>
 <body>
@@ -36,8 +37,10 @@
             <ul class="list-group">
                 <li class="list-group-item list-group-item-action">NASTAR RAN Discovery & NASTAR 3G
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><a href="{{link_download.nastar_ran_4g}}">NASTAR DISCOVERY 4G</a></li>
-                        <li class="list-group-item"><a href="{{link_download.nastar_ran_3g}}">NASTAR DISCOVERY 3G</a></li>
+                        <li class="list-group-item"><a href="{{link_download.nastar_ran_4g}}">NASTAR DISCOVERY 4G</a>
+                        </li>
+                        <li class="list-group-item"><a href="{{link_download.nastar_ran_3g}}">NASTAR DISCOVERY 3G</a>
+                        </li>
                         <li class="list-group-item"><a href="{{link_download.nastar_ran}}">NASTAR 3G</a></li>
                     </ul>
                 </li>
@@ -113,8 +116,8 @@
 
 </body>
 <!-- Bootstrap core JavaScript -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="{{url_for('static', filename='library/jquery-3.4.0.slim.js.min.css')}}"></script>
+<script src="{{url_for('static', filename='library/popper.min.js')}}"></script>
+<script src="{{url_for('static', filename='library/bootstrap.min.css')}}"></script>
 
 </html>

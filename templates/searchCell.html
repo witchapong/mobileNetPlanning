@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <title>Search Data</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='library/bootstrap.min.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="../static/library/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+
     <style>
         .fixed-bottom {
            font-size: 14px
@@ -20,6 +21,7 @@
         .table-wrapper-scroll-y {
             display: block;
         }
+
     </style>
 </head>
 <body>
@@ -596,13 +598,11 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{url_for('static', filename='library/jquery-3.4.0.slim.js.min.css')}}"></script>
-    <script src="{{url_for('static', filename='library/popper.min.js')}}"></script>
-    <script src="{{url_for('static', filename='library/bootstrap.min.css')}}"></script>
-    <script type="text/javascript"
-            src="{{url_for('static', filename='library/FileSaver.min.js')}}"></script>
-    <script type="text/javascript"
-            src="{{url_for('static', filename='library/xlsx.full.min.js.min.js')}}"></script>
+    <script type="text/javascript" src="../static/library/jquery-3.4.0.slim.js"></script>
+    <script type="text/javascript" src="../static/library/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/library/popper.min.js"></script>
+    <script type="text/javascript" src="../static/library/FileSaver.min.js"></script>
+    <script type="text/javascript" src="../static/library/js-xlsx/dist/xlsx.full.min.js"></script>
     <script type="text/javascript">
        function test_func(dataIn) {
             function isEmptyObj(arg) {
@@ -649,15 +649,6 @@
                 }
                 saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'export.xlsx');
        }
-
-
-
-
-
-
-
-
-
 
     </script>
 </div>

@@ -14,7 +14,6 @@ def multiple_search(siteBBU, rat):
         'cellNB': 'enodeb_name'
     }
     for i in siteBBU:
-        # new_siteBBU.append(' c.nodeb_name like ' + '\'__________' + i + '\'')
         new_siteBBU.append(' {} like \'__________{}\''.format(systemDict.get(rat), i))
     return ' or '.join('{}'.format(s) for s in new_siteBBU)
 

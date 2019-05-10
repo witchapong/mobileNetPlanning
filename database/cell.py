@@ -44,7 +44,7 @@ def list_cell3G(cellName):
 def list_cell2G(cellName):
     sql = "SELECT c.cell_name, c.site_code, c.system, c.cell_id, c.bts_name, c.bts_id, c.lac, c.rac, " \
           "c.bsc, c.mcc, c.mnc, c.msc, c.bsic, c.ncc, c.freq_band, c.freq_bcch, c.cell_status, " \
-          "IFNULL(a.ant_height, 'n/a') as 'ant_height', IFNULL(a.ant_model, 'n/a') as 'ant_model'," \
+          "IFNULL(a.ant_height, 'n/a') as 'ant_height', IFNULL(a.ant_model, 'n/a') as 'ant_model', " \
           "IFNULL(ra.ant_type, 'n/a') as 'ant_type', IFNULL(a.physical_azimuth, 'n/a') as 'physical_azimuth', " \
           "IFNULL(a.m_tilt, 'n/a') as 'm_tilt', IFNULL(a.e_tilt, 'n/a') as 'e_tilt'" \
           "FROM mp_bkk.cell2G c " \

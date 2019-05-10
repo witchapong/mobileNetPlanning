@@ -1,4 +1,8 @@
 $(document).ready(function() {
+     $(".custom-file-input#urlBox").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
     var fileName = "";
     // plan button event
     $('.btn.btn-warning').click(function() {

@@ -19,7 +19,7 @@ class Production:
 
 class Database:
     def __init__(self):
-        config = Development()  # set configuration environment
+        config = Production()  # set configuration environment
         self.con = pymysql.connect(host=config.host,
                                    user=config.user,
                                    password=config.password,

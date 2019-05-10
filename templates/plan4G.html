@@ -73,9 +73,11 @@
             <div class="row">
                 <div class="col-lg-6">
                     <form role="form" action="{{url_for('upload_4g')}}" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" name="file" accept=".xlsx" class="form-control" id="url-box"
-                                   placeholder="Enter file" style="max-width: 500px;" required>
+                          <div class="form-group">
+                            <div class="custom-file">
+                                <input type="file" name="file" class="custom-file-input" id="urlBox" accept=".xlsx" required>
+                                <label class="custom-file-label" for="inputCustomFile">Choose file...</label>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary" role="button">Submit</button>
                     </form>

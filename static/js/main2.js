@@ -61,7 +61,7 @@ $(document).ready(function() {
             error: function(error){
                 console.log(error)
             }
-          });
+           });
     };
     function updateProgressBar(val){
         console.log('progress:' + val)

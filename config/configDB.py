@@ -2,11 +2,11 @@ import pymysql
 
 
 class Development:
-    host = "127.0.0.1"
-    user = "root"
-    password = "root"
+    host = "10.138.34.134"
+    user = "prachyab"
+    password = "prachyabmaster"
     db = "mp_bkk"
-    port = 8889
+    port = 3306
 
 
 class Production:

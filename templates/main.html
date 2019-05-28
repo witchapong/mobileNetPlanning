@@ -43,6 +43,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{url_for('search_cell')}}">Search Data</a>
                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('search_cell_id')}}">Search ID</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,13 +71,13 @@
             <h1 class="mt-5">Radio Masterplan <span style="font-weight:bolder;">BKK</span></h1>
             <p class="lead">radio net planning web application</p>
             <hr class="my-4">
-
             <p class="lead"><b>Currently available applications:</b></p>
             <ul class="list-unstyled">
                 <li class=""><a href="{{url_for('call_4g')}}">PCI RSI Planner</a></li>
                 <li class=""><a href="{{url_for('call_3g')}}">PSC Planner</a></li>
                 <li class=""><a href="{{url_for('download')}}">Download Data</a></li>
                 <li class=""><a href="{{url_for('search_cell')}}">Search Data</a></li>
+                <li class=""><a href="{{url_for('search_cell_id')}}">Search ID</a></li>
             </ul>
         </div>
     </div>

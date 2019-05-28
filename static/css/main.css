@@ -144,13 +144,21 @@ hr {
     font-size: 12px;
 }
 
-td {
-    overflow: hidden;
-}
-
 footer {
     position: fixed;
     height: 100px;
     bottom: 0;
     width: 100%;
 }
+
+.table-responsive{
+  height: 300px;
+  overflow: scroll;
+}
+
+thead tr:nth-child(1) th{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    overflow: hidden;
+ }

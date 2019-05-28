@@ -1,6 +1,13 @@
 import pymysql
 
 
+class LocalDev:
+    host = "127.0.0.1"
+    user = "root"
+    password = "root"
+    db = "mp_bkk"
+    port = 8889
+
 class Development:
     host = "10.138.34.134"
     user = "prachyab"
@@ -19,7 +26,7 @@ class Production:
 
 class Database:
     def __init__(self):
-        config = Development()  # set configuration environment
+        config = LocalDev()  # set configuration environment
         self.con = pymysql.connect(host=config.host,
                                    user=config.user,
                                    password=config.password,

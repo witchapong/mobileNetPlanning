@@ -5,8 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <title>Search Data</title>
+    <title>Search ID</title>
     <link rel="stylesheet" href="../static/library/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
     <style>
         .fixed-bottom {
            font-size: 14px
@@ -20,15 +21,15 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 mx-auto">
                 <div class="input-group mb-3">
-                    <form role="form" action="{{url_for('search_data_beta')}}" class="form-inline"
+                    <form role="form" action="{{url_for('search_id')}}" class="form-inline"
                           method="POST" enctype=multipart/form-data>
                         <div class="form-group row">
                             <div class="search-submit col-lg-2 ">
                                 <select class="custom-select" id="filterBy" name="filterBy">
                                     <option selected>Search</option>
-                                    <option value="cellid">CellName</option>
-                                    <option value="nodebid">SiteCode</option>
-                                    <option value="enodebid">SiteConfig</option>
+                                    <option value="cellid">CellID</option>
+                                    <option value="nodebid">NodeBID</option>
+                                    <option value="enodebid">eNodeBID</option>
                                 </select>
                             </div>
                             <div class="col-lg-8 ">
@@ -545,7 +546,7 @@
                         <a class="nav-link " href="{{url_for('download')}}">Download Data</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Search Data<span
+                        <a class="nav-link" href="#">Search ID<span
                                 class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item dropup">

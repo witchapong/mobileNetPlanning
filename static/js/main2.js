@@ -14,7 +14,7 @@ $(document).ready(function() {
             data:$('#plan').serialize(),
             success: function(response){
                 // check if there is job_id key within the json
-                console.log(response)
+                // console.log(response)
                 rsp_json = JSON.parse(response)
                 if (Object.keys(rsp_json).includes("job_id")){
                     job_id=rsp_json['job_id']
@@ -61,12 +61,11 @@ $(document).ready(function() {
                     fileName = response['meta']['file_name']
                     $('#fileName').attr('value',fileName)
                     console.log(fileName)
-                }
-            },
+                }},
             error: function(error){
                 console.log(error)
             }
-          });
+           });
     };
     function updateProgressBar(val){
         console.log('progress:' + val)

@@ -53,7 +53,7 @@ $(document).ready(function() {
                     $('#progressLog').text('Progress: ' + pg)
                 }
                 // if progress == 100, stop the process
-                if (parseInt(pg) == 100) {
+                if (parseInt(pg == 100) {
                     clearInterval(periodic_func);
                     // enable the download button
                     $('#downloadButton').removeAttr("disabled");

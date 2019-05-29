@@ -27,7 +27,7 @@
                             <div class="search-submit col-lg-2 ">
                                 <select class="custom-select" id="filterBy" name="filterBy">
                                     <option selected>Search</option>
-                                    <option value="cellid">CellID</option>
+                                    <option value="cellid">CellID(SAC)</option>
                                     <option value="nodebid">NodeBID</option>
                                     <option value="enodebid">eNodeBID</option>
                                 </select>
@@ -91,10 +91,7 @@
     {% if resSearch -%}
     {% set data_site = resSearch['siteCode'] %}
     {% set data_bbu = resSearch['siteConfig'] %}
-    {% set data_4g = resSearch['cell4G'] %}
-    {% set data_3g = resSearch['cell3G'] %}
-    {% set data_2g = resSearch['cell2G'] %}
-    {% set data_nb = resSearch['cellNB'] %}
+    {% set data_cell = resSearch['cells'] %}
 
     <div class="row" style="float: right;margin-right: 15px;">
         <button class="btn btn-info"
@@ -105,8 +102,8 @@
     {%- endif %}
 
     <!--  site information  -->
+    <h3>Site Information</h3>
     <div class="table-responsive text-nowrap" style="margin-bottom:2rem;">
-        <h3>Site Information</h3>
         <table id="siteInfo" class="table table-hover table-fixed">
             <thead class="thead-dark">
             <tr class="head-cell">
@@ -168,8 +165,8 @@
     <!--  end site information  -->
 
     <!--  bbu information  -->
+    <h3>BBU Information</h3>
     <div class="table-responsive text-nowrap" style="margin-bottom:1rem;">
-        <h3>BBU Information</h3>
         <table id="bbuInfo" class="table table-hover table-fixed">
             <thead class="thead-dark">
             <tr class="head-cell">
@@ -216,28 +213,28 @@
     <!--  end bbu information  -->
 
 
-    <!--  LTE information  -->
-    {% if data_4g %}
-    <div class="table-responsive text-nowrap" style="margin-bottom:2rem;">
-        <h3>LTE</h3>
+    <!--  Cell information  -->
+    <h3 style="margin-top:2rem;">Cell Information</h3>
+    {% if data_cell %}
+    <div class="table-responsive text-nowrap" style=margin-bottom:5rem;">
         <table id="searchCell4G" class="table table-hover table-fixed">
-            <thead>
+            <thead class="thead-dark">
             <tr class="head-cell">
                 <th scope="col">CELLNAME</th>
                 <th scope="col">STATUS</th>
                 <th scope="col">SITE</th>
                 <th scope="col">SYSTEM</th>
                 <th scope="col">CELLID</th>
-                <th scope="col">ENODEB</th>
-                <th scope="col">ENODEBID</th>
+                <th scope="col">NODEB/ENODEB</th>
+                <th scope="col">NODEBID/ENODEBID</th>
                 <th scope="col">LAC</th>
                 <th scope="col">TAC</th>
                 <th scope="col">MCC</th>
                 <th scope="col">MNC</th>
-                <th scope="col">DL EARFCN</th>
-                <th scope="col">UL EARFCN</th> <!-- adding-->
+                <th scope="col">DL UARFCN/EARFCN</th>
+                <th scope="col">UL UARFCN/EARFCN</th> <!-- adding-->
                 <th scope="col">DUPLEX</th>
-                <th scope="col">PCI</th>
+                <th scope="col">PSC/PCI</th>
                 <th scope="col">RSI</th> <!-- adding-->
                 <th scope="col">TXRX</th>
                 <th scope="col">EMTC</th>
@@ -250,7 +247,7 @@
                 <th scope="col">M-TILT</th> <!-- adding-->
                 <th scope="col">E-TILT</th> <!-- adding-->
             </thead>
-            {% for row in data_4g %}
+            {% for row in data_cell %}
             <tr class="cell">
                 <td>{{ row.cell_name }}</td>
                 {% if row.cell_status == 'No' %}
@@ -267,16 +264,36 @@
                 <td>{{ row.site_code }}</td>
                 <td>{{ row.system }}</td>
                 <td>{{ row.cell_id }}</td>
+                {% if row.enodeb_name %}
                 <td>{{ row.enodeb_name }}</td>
+                {% elif row.nodeb_name %}
+                <td>{{ row.nodeb_name }}</td>
+                {% endif %}
+                {% if row.enodeb_id %}
                 <td>{{ row.enodeb_id }}</td>
+                {% elif row.nodeb_id %}
+                <td>{{ row.nodeb_id }}</td>
+                {% endif %}
                 <td>{{ row.lac }}</td>
                 <td>{{ row.tac }}</td>
                 <td>{{ row.mcc }}</td>
                 <td>{{ row.mnc }}</td>
+                {% if row.dl_earfcn %}
                 <td>{{ row.dl_earfcn }}</td>
+                {% elif row.dl_uarfcn %}
+                <td>{{ row.dl_uarfcn }}</td>
+                {% endif %}
+                {% if row.ul_earfcn %}
                 <td>{{ row.ul_earfcn }}</td>
+                {% elif row.ul_uarfcn %}
+                <td>{{ row.ul_uarfcn }}</td>
+                {% endif %}
                 <td>{{ row.duplex }}</td>
+                {% if row.psc %}
+                <td>{{ row.psc }}</td>
+                {% elif row.pci %}
                 <td>{{ row.pci }}</td>
+                {% endif %}
                 <td>{{ row.rsi }}</td>
                 <td>{{ row.cell_txrx }}</td>
                 <td>{{ row.emtc_flag }}</td>
@@ -294,236 +311,6 @@
     </div>
     {% endif %}
 
-    <!--  UMTS information  -->
-    {% if data_3g %}
-    <div class="table-responsive text-nowrap" style="margin-bottom:3.5rem;">
-        <h3 style="margin-top: 5px;">UMTS</h3>
-        <table id="searchCell3G" class="table table-hover table-fixed">
-            <thead>
-            <tr class="head-cell">
-                <th scope="col">CELLNAME</th>
-                <th scope="col">STATUS</th>
-                <th scope="col">SITE</th>
-                <th scope="col">SYSTEM</th>
-                <th scope="col">CELLID</th>
-                <th scope="col">NODEB</th>
-                <th scope="col">NODEBID</th>
-                <th scope="col">RNC</th>
-                <th scope="col">RNCID</th>
-                <th scope="col">LAC</th>
-                <th scope="col">MCC</th>
-                <th scope="col">MNC</th>
-                <th scope="col">DL UARFCN</th>
-                <th scope="col">UL UARFCN</th> <!-- adding-->
-                <th scope="col">DUPLEX</th>
-                <th scope="col">PSC</th>
-                <th scope="col">TXRX</th>
-                <th scope="col">MULTI TYPE</th> <!-- adding-->
-                <th scope="col">CPICH</th> <!-- adding-->
-                <th scope="col">MAX TX</th> <!-- adding-->
-                <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
-                <th scope="col">ANTENNA MODEL</th> <!-- adding-->
-                <th scope="col">ANTENNA TYPE</th> <!-- adding-->
-                <th scope="col">AZIMUTH</th> <!-- adding-->
-                <th scope="col">M-TILT</th> <!-- adding-->
-                <th scope="col">E-TILT</th> <!-- adding-->
-            </thead>
-            {% for row in data_3g %}
-            <tr class="cell">
-                <td>{{ row.cell_name }}</td>
-                {% if row.cell_status == 'No' %}
-                <td class="table-primary">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Yes' %}
-                <td class="table-success">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Locked' %}
-                <td class="table-warning">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Removed' %}
-                <td class="table-danger">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Relocated' %}
-                <td class="table-info">{{ row.cell_status }}</td>
-                {% endif %}
-                <td>{{ row.site_code }}</td>
-                <td>{{ row.system }}</td>
-                <td>{{ row.cell_id }}</td>
-                <td>{{ row.nodeb_name }}</td>
-                <td>{{ row.nodeb_id }}</td>
-                <td>{{ row.rnc }}</td>
-                <td>{{ row.rnc_id }}</td>
-                <td>{{ row.lac }}</td>
-                <td>{{ row.mcc }}</td>
-                <td>{{ row.mnc }}</td>
-                <td>{{ row.dl_uarfcn }}</td>
-                <td>{{ row.ul_uarfcn }}</td>
-
-                <td>{{ row.duplex }}</td>
-                <td>{{ row.psc }}</td>
-                <td>{{ row.cell_txrx }}</td>
-                <td>{{ row.multi_type }}</td>
-
-                <td>{{ row.cpichpwr }}</td>
-                <td>{{ row.max_tx_pwr }}</td>
-                <td>{{ row.ant_height }}</td>
-                <td>{{ row.ant_model }}</td>
-                <td>{{ row.ant_type }}</td>
-                <td>{{ row.physical_azimuth }}</td>
-                <td>{{ row.m_tilt }}</td>
-                <td>{{ row.e_tilt }}</td>
-
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    {% endif %}
-
-    <!--  GSM information  -->
-    {% if data_2g %}
-    <div class="table-responsive text-nowrap" style="margin-bottom:1rem;">
-        <h3 style="margin-top: 5px;">GSM</h3>
-        <table id="searchCell2G" class="table table-hover table-fixed">
-            <thead>
-            <tr class="head-cell">
-                <th scope="col">CELLNAME</th>
-                <th scope="col">STATUS</th>
-                <th scope="col">SITE</th>
-                <th scope="col">SYSTEM</th>
-                <th scope="col">CELLID</th>
-                <th scope="col">BTSNAME</th>
-                <th scope="col">BTSID</th>
-                <th scope="col">LAC</th>
-                <th scope="col">RAC</th>
-                <th scope="col">BSC</th>
-                <th scope="col">MCC</th>
-                <th scope="col">MNC</th>
-                <th scope="col">BSIC</th>
-                <th scope="col">NCC</th>
-                <th scope="col">BAND</th>
-                <th scope="col">BCCH</th>
-                <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
-                <th scope="col">ANTENNA MODEL</th> <!-- adding-->
-                <th scope="col">ANTENNA TYPE</th> <!-- adding-->
-                <th scope="col">AZIMUTH</th> <!-- adding-->
-                <th scope="col">M-TILT</th> <!-- adding-->
-                <th scope="col">E-TILT</th> <!-- adding-->
-
-            </thead>
-            {% for row in data_2g %}
-            <tr class="cell">
-                <td>{{ row.cell_name }}</td>
-                {% if row.cell_status == 'No' %}
-                <td class="table-primary">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Yes' %}
-                <td class="table-success">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Locked' %}
-                <td class="table-warning">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Removed' %}
-                <td class="table-danger">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Relocated' %}
-                <td class="table-info">{{ row.cell_status }}</td>
-                {% endif %}
-                <td>{{ row.site_code }}</td>
-                <td>{{ row.system }}</td>
-                <td>{{ row.cell_id }}</td>
-                <td>{{ row.bts_name }}</td>
-                <td>{{ row.bts_id }}</td>
-                <td>{{ row.lac }}</td>
-                <td>{{ row.rac }}</td>
-                <td>{{ row.bsc }}</td>
-                <td>{{ row.mcc }}</td>
-                <td>{{ row.mnc }}</td>
-                <td>{{ row.msc }}</td>
-                <td>{{ row.bsic }}</td>
-                <td>{{ row.ncc }}</td>
-                <td>{{ row.freq_band }}</td>
-                <td>{{ row.freq_bcch }}</td>
-
-                <td>{{ row.ant_height }}</td>
-                <td>{{ row.ant_model }}</td>
-                <td>{{ row.ant_type }}</td>
-                <td>{{ row.physical_azimuth }}</td>
-                <td>{{ row.m_tilt }}</td>
-                <td>{{ row.e_tilt }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    {% endif %}
-
-    <!--  NB information  -->
-    {% if data_nb %}
-    <div class="table-responsive text-nowrap" style="margin-bottom:3.5rem;">
-        <h3 style="margin-top: 5px;">NB</h3>
-        <table id="searchCellNB" class="table table-hover table-fixed">
-            <thead>
-            <tr class="head-cell">
-                <th scope="col">CELLNAME</th>
-                <th scope="col">STATUS</th>
-                <th scope="col">SITE</th>
-                <th scope="col">SYSTEM</th>
-                <th scope="col">CELLID</th>
-                <th scope="col">ENODEB</th>
-                <th scope="col">ENODEBID</th>
-                <th scope="col">LAC</th>
-                <th scope="col">TAC</th>
-                <th scope="col">MCC</th>
-                <th scope="col">MNC</th>
-                <th scope="col">DL EARFCN</th>
-                <th scope="col">UL EARFCN</th><!-- adding-->
-
-                <th scope="col">DUPLEX</th>
-                <th scope="col">PCI</th>
-                <th scope="col">TXRX</th>
-                <th scope="col">MULTI TYPE</th> <!-- adding-->
-                <th scope="col">RS POWER</th> <!-- adding-->
-
-
-                <th scope="col">ANTENNA HEIGHT</th> <!-- adding-->
-                <th scope="col">ANTENNA MODEL</th> <!-- adding-->
-                <th scope="col">ANTENNA TYPE</th> <!-- adding-->
-                <th scope="col">AZIMUTH</th> <!-- adding-->
-                <th scope="col">M-TILT</th> <!-- adding-->
-                <th scope="col">E-TILT</th> <!-- adding-->
-            </thead>
-            {% for row in data_nb %}
-            <tr class="cell">
-                <td>{{ row.cell_name }}</td>
-                {% if row.cell_status == 'No' %}
-                <td class="table-primary">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Yes' %}
-                <td class="table-success">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Locked' %}
-                <td class="table-warning">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Removed' %}
-                <td class="table-danger">{{ row.cell_status }}</td>
-                {% elif row.cell_status == 'Relocated' %}
-                <td class="table-info">{{ row.cell_status }}</td>
-                {% endif %}
-                <td>{{ row.site_code }}</td>
-                <td>{{ row.system }}</td>
-                <td>{{ row.cell_id }}</td>
-                <td>{{ row.enodeb_name }}</td>
-                <td>{{ row.enodeb_id }}</td>
-                <td>{{ row.lac }}</td>
-                <td>{{ row.tac }}</td>
-                <td>{{ row.mcc }}</td>
-                <td>{{ row.mnc }}</td>
-                <td>{{ row.dl_earfcn }}</td>
-                <td>{{ row.ul_earfcn }}</td>
-                <td>{{ row.duplex }}</td>
-                <td>{{ row.pci }}</td>
-                <td>{{ row.cell_txrx }}</td>
-                <td>{{ row.multi_type }}</td>
-                <td>{{ row.rspwr }}</td>
-                <td>{{ row.ant_height }}</td>
-                <td>{{ row.ant_model }}</td>
-                <td>{{ row.ant_type }}</td>
-                <td>{{ row.physical_azimuth }}</td>
-                <td>{{ row.m_tilt }}</td>
-                <td>{{ row.e_tilt }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    {% endif %}
 
     <!--<p style="font-size: 12px;font-weight: bolder;">Developed by Radio-BKK developer</p>-->
 
@@ -545,7 +332,10 @@
                     <li class="nav-item">
                         <a class="nav-link " href="{{url_for('download')}}">Download Data</a>
                     </li>
-                    <li class="nav-item active">
+                   <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('search_cell')}}">Search Data</span></a>
+                    </li>
+                      <li class="nav-item active">
                         <a class="nav-link" href="#">Search ID<span
                                 class="sr-only">(current)</span></a>
                     </li>
@@ -569,13 +359,11 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{url_for('static', filename='library/jquery-3.4.0.slim.js.min.css')}}"></script>
-    <script src="{{url_for('static', filename='library/popper.min.js')}}"></script>
-    <script src="{{url_for('static', filename='library/bootstrap.min.css')}}"></script>
-    <script type="text/javascript"
-            src="{{url_for('static', filename='library/FileSaver.min.js')}}"></script>
-    <script type="text/javascript"
-            src="{{url_for('static', filename='library/xlsx.full.min.js.min.js')}}"></script>
+     <script type="text/javascript" src="../static/library/jquery-3.4.0.slim.js"></script>
+    <script type="text/javascript" src="../static/library/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/library/popper.min.js"></script>
+    <script type="text/javascript" src="../static/library/FileSaver.min.js"></script>
+    <script type="text/javascript" src="../static/library/js-xlsx/dist/xlsx.full.min.js"></script>
     <script type="text/javascript">
        function test_func(dataIn) {
             function isEmptyObj(arg) {
@@ -588,29 +376,21 @@
             }
             let site = isEmptyObj(dataIn.siteCode);
             let bbu = isEmptyObj(dataIn.siteConfig);
-            let lte =  isEmptyObj(dataIn.cell4G);
-            let umts =  isEmptyObj(dataIn.cell3G);
-            let gsm =  isEmptyObj(dataIn.cell2G);
-            let nb =  isEmptyObj(dataIn.cellNB);
+            let cell =  isEmptyObj(dataIn.cells);
+
             var wb = XLSX.utils.book_new();
                 wb.Props = {
                             Title: "Export Masterplan",
-                            Subject: "PRE TEST",
-                            CreatedDate: new Date(2019,04 ,06)
+                            Subject: "SearchByID",
+                            CreatedDate: new Date(2019, 05 ,29)
                     };
                 wb.SheetNames.push("SITE");
                 wb.SheetNames.push("BBU");
-                wb.SheetNames.push("CELL LTE");
-                wb.SheetNames.push("CELL UMTS");
-                wb.SheetNames.push("CELL GSM");
-                wb.SheetNames.push("CELL NB");
+                wb.SheetNames.push("CELL");
 
                 wb.Sheets["SITE"] = XLSX.utils.json_to_sheet(site);
                 wb.Sheets["BBU"] = XLSX.utils.json_to_sheet(bbu);
-                wb.Sheets["CELL LTE"] = XLSX.utils.json_to_sheet(lte);
-                wb.Sheets["CELL UMTS"] = XLSX.utils.json_to_sheet(umts);
-                wb.Sheets["CELL GSM"] = XLSX.utils.json_to_sheet(gsm);
-                wb.Sheets["CELL NB"] = XLSX.utils.json_to_sheet(nb);
+                wb.Sheets["CELL"] = XLSX.utils.json_to_sheet(cell);
 
                 var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
 
@@ -620,9 +400,8 @@
                             for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
                             return buf;
                 }
-                saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'post_test.xlsx');
+                saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'ExportSearch.xlsx');
        }
-
     </script>
 </div>
 </body>

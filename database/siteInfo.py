@@ -5,9 +5,7 @@ import logging
 def multiple_search(siteBBU):
     new_siteBBU = []
     for i in siteBBU:
-        # new_siteBBU.append(' b.site_code_config like ' + '\'__________' + i + '\'')
         new_siteBBU.append(' b.site_code_config like \'__________{}\''.format(i))
-
     return ' or '.join('{}'.format(s) for s in new_siteBBU)
 
 
@@ -61,6 +59,15 @@ def list_bbuInfo(siteConfig):
           "b.slot16, b.slot18, b.slot19 " \
           "FROM bbu b " \
           "WHERE" + multiple_search(siteConfig) + ";"""
+    return executeSQL(sql)
+
+
+def list_bbuInfo_alpha(siteConfig):
+    sql = "SELECT b.site_code_config, b.site_code, b.bbu_vendor, b.bbu_type, " \
+          "b.slot0, b.slot1, b.slot2, b.slot3, b.slot4, b.slot5, b.slot6, b.slot7, " \
+          "b.slot16, b.slot18, b.slot19 " \
+          "FROM bbu b " \
+          "WHERE b.site_code_config in " + siteConfig + ";"""
     return executeSQL(sql)
 
 

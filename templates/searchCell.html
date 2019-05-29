@@ -561,6 +561,9 @@
                         <a class="nav-link" href="#">Search Data<span
                                 class="sr-only">(current)</span></a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('search_cell_id')}}">Search ID</span></a>
+                    </li>
                     <li class="nav-item dropup">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -605,8 +608,8 @@
             var wb = XLSX.utils.book_new();
                 wb.Props = {
                             Title: "Export Masterplan",
-                            Subject: "PRE TEST",
-                            CreatedDate: new Date(2019,04 ,06)
+                            Subject: "SeachByName",
+                            CreatedDate: new Date(2019, 05, 29)
                     };
                 wb.SheetNames.push("SITE");
                 wb.SheetNames.push("BBU");

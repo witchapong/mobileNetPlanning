@@ -8,6 +8,7 @@ class LocalDev:
     db = "mp_bkk"
     port = 8889
 
+
 class Development:
     host = "10.138.34.134"
     user = "prachyab"

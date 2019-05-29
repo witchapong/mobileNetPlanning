@@ -15,6 +15,11 @@
         .list-group-flush{
             font-size: 14px
         }
+        .text-desc{
+            font-size: 13px;
+            font-weight: bold
+        }
+
     </style>
 </head>
 <body>
@@ -53,8 +58,52 @@
             </ul>
             <ul class="list-group">
                 <li class="list-group-item list-group-item-action">CellInfo
+                    <span class="text-desc">
+                    : CellInfo is base data for MapInfo, transformed following MapInfo format
+                    </span>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><a href="{{link_download.cellinfo}}">CellInfo</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- allinfo -->
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-action">AllInfo
+                    <span class="text-desc">
+                    : AllInfo is data from Masterplan Database, not transformed or filtered format
+                    </span>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.location}}">Location</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.site}}">Site</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.bbu}}">BBU</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.cell4G}}">Cell4G</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.cell3G}}">Cell3G</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.cell2G}}">Cell2G</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.cellNB}}">CellNB</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.cell_ant}}">
+                            Cell_Antenna <span class="">(All CellXAnt Config)</span> </a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{{link_download.antenna}}">Antenna</a></li>
+                    </ul>
+                    <ul class="list-group list-group-flush ">
+                        <li class="list-group-item">
+                            <strong><a href="{{link_download.refantenna}}">ReferenceAntenna</a></strong>
+                        </li>
                     </ul>
                 </li>
             </ul>

@@ -4,7 +4,7 @@ from rq.job import Job
 from worker import redis_con
 from Planner4G import PCIRSIPlanner
 from Planner3G import PSCPlanner
-from database import cell as Cell, site as Site, bbu as BBU, siteInfo
+from database import cell as Cell, site as Site, bbu as BBU, siteInfo, searchID
 import requests
 import config.configURL
 
@@ -167,7 +167,7 @@ def search_data():
                         #
                         cellRes, siteRes, bbuRes = search_for_cellName(site_search)
                         # check value in dict
-                        if any(len(v) == 0 for k, v in cellRes.items()):
+                        if any(len(v) != 0 for k, v in cellRes.items()):
                             dataView = {**cellRes, **siteRes, **bbuRes}
                             return render_template('searchCell.html', resSearch=dataView,
                                                    link=config.configURL.URL, content_type='application/json')
@@ -218,7 +218,7 @@ def search_data():
                         #
                         # search by NodeName, cannot be separated, search all
                         #
-                        # TODO sites_str = '________X' or '________Y'
+                        # sites_str = '________X' or '________Y'
                         bbuRes = search_bbuInfo(searchSiteConfig=site_search, search_type='bbu')
                         if bbuRes:
                             siteRes = search_siteInfo(searchSite=site_search, search_type='bbu')
@@ -265,6 +265,10 @@ def search_bbuInfo(searchSiteConfig, search_type):
         return bbuDict
     elif search_type == 'site':
         bbu = siteInfo.list_siteBBUInfo(siteCode=searchSiteConfig)
+        bbuDict = {'siteConfig': bbu}
+        return bbuDict
+    elif search_type == 'nodeb':
+        bbu = siteInfo.list_bbuInfo_alpha(siteConfig=searchSiteConfig)
         bbuDict = {'siteConfig': bbu}
         return bbuDict
     else:
@@ -374,19 +378,41 @@ def search_for_bbu(siteConfig):
     return dataDict
 
 
-def search_for_cellID():
-    pass
+def search_for_cellID(cellID):
+    # @param (123,234,345)
+    site_code, site_config = set(), set()
+    cell3G = searchID.list_cellID(cellID=cellID)
+    cell_3g = cell3G if cell3G else dict()
+    for cell in cell_3g:
+        site_code.add(cell['site_code'])
+        site_config.add(cell['nodeb_name'])
+    cellDict = {'cells': cell_3g}
+    return cellDict, site_code, site_config
 
 
-def search_for_nodebID():
-    pass
+def search_for_nodebID(nodeb_id):
+    site_code, site_config = set(), set()
+    cell3G = searchID.list_nodebID(nodeID=nodeb_id)
+    cell_3g = cell3G if cell3G else dict()
+    for cell in cell_3g:
+        site_code.add(cell['site_code'])
+        site_config.add(cell['nodeb_name'])
+    cellDict = {'cells': cell_3g}
+    return cellDict, site_code, site_config
 
 
-def search_for_enodebID():
-    pass
+def search_for_enodebID(enodeb_id):
+    site_code, site_config = set(), set()
+    site4G = searchID.list_eNodebID(eNodeID=enodeb_id)
+    cell_4g = site4G if site4G else dict()
+    for cell in cell_4g:
+        site_code.add(cell['site_code'])
+        site_config.add(cell['enodeb_name'])
+    cellDict = {'cells': cell_4g}
+    return cellDict, site_code, site_config
 
 
-# TODO search cellID/NodeBID/eNodeBID
+# search cellID/NodeBID/eNodeBID
 @app.route('/search/id', methods=['GET', 'POST'])
 def search_id():
     import re
@@ -396,61 +422,66 @@ def search_id():
         if not (filterParam.capitalize() == 'Search'):
             if filterParam == 'cellid':
                 site_search = list(re.split('[,/\\\s]', searchParam))
-                # TODO limit search 5 cell_id
                 if len(site_search) > 5:
                     flash('5', 'overlimit')
                     return render_template('searchID.html', link=config.configURL.URL,
                                            content_type='application/json')
-                # TODO check condition cell_id
                 else:
-                    if any(len(cell) == 0 for cell in site_search):  # TODO check wording not String
-                        flash('CellID: ', 'cell')
-                        return render_template('searchID.html', link=config.configURL.URL,
-                                               content_type='application/json')
-                    else:
-                        #
-                        # search by CellID
-                        #
-                        cellRes, siteRes, bbuRes = search_for_cellName(site_search)
-                        # check value in dict
-                        if all(len(v) != 0 for k, v in cellRes.items()):
-                            dataView = {**cellRes, **siteRes, **bbuRes}
-                            return render_template('searchID.html', resSearch=dataView,
-                                                   link=config.configURL.URL, content_type='application/json')
-                        else:
-                            flash('{} is not found in existing data'.format(site_search), 'error')
+                    try:
+                        if any(int(cell) not in range(0, 65535) for cell in site_search):
+                            flash('CellID: ', 'cell')
                             return render_template('searchID.html', link=config.configURL.URL,
                                                    content_type='application/json')
-            elif filterParam == 'nodebid':
-                site_search = list(re.split('[,/\\\s]', searchParam))
-                # TODO limit search 5 cell_id
-                if len(site_search) > 5:
-                    flash('5', 'overlimit')
-                    return render_template('searchID.html', link=config.configURL.URL,
-                                           content_type='application/json')
-                # TODO check condition cell_id
-                else:
-                    if not all(len(site) == 5 for site in site_search):
-                        flash('SiteCode: must be 5 digit length', 'site')
-                        return render_template('searchID.html', link=config.configURL.URL,
-                                               content_type='application/json')
-                    else:
-                        #
-                        # search by CellName, cannot be separated, search all
-                        #
-                        sites_str = "(" + ','.join('\'{}\''.format(w) for w in site_search) + ")"
-                        siteRes = search_siteInfo(searchSite=sites_str, search_type='site')
-                        bbuRes = search_bbuInfo(searchSiteConfig=sites_str, search_type='site')
-                        if siteRes and bbuRes:
-                            cellRes = search_for_site(sites_str)
+                        else:
+                            sites_str = "(" + ','.join('\'{}\''.format(w) for w in site_search) + ")"
+                            cellRes, siteCode, siteConfig = search_for_cellID(sites_str)
                             if cellRes:
+                                siteCode = "(" + ','.join('\'{}\''.format(w) for w in siteCode) + ")"
+                                siteConfig = "(" + ','.join('\'{}\''.format(w) for w in siteConfig) + ")"
+                                siteRes = search_siteInfo(searchSite=siteCode, search_type='site')
+                                bbuRes = search_bbuInfo(searchSiteConfig=siteConfig, search_type='nodeb')
                                 dataView = {**cellRes, **siteRes, **bbuRes}
                                 return render_template('searchID.html', resSearch=dataView,
                                                        link=config.configURL.URL, content_type='application/json')
-                        else:
-                            flash('{} is not found in existing data'.format(filterParam), 'error')
+                            else:
+                                flash('{} is not found in existing data'.format(filterParam), 'error')
+                                return render_template('searchID.html', link=config.configURL.URL,
+                                                       content_type='application/json')
+                    except ValueError:
+                        flash('{} is not found in existing data'.format(filterParam), 'error')
+                        return render_template('searchID.html', link=config.configURL.URL,
+                                               content_type='application/json')
+            elif filterParam == 'nodebid':
+                site_search = list(re.split('[,/\\\s]', searchParam))
+                if len(site_search) > 5:
+                    flash('5', 'overlimit')
+                    return render_template('searchID.html', link=config.configURL.URL,
+                                           content_type='application/json')
+                else:
+                    try:
+                        if any(int(site) not in range(0, 65535) for site in site_search):
+                            flash('SiteCode: must be 5 digit length', 'site')
                             return render_template('searchID.html', link=config.configURL.URL,
                                                    content_type='application/json')
+                        else:
+                            sites_str = "(" + ','.join('\'{}\''.format(w) for w in site_search) + ")"
+                            cellRes, siteCode, siteConfig = search_for_nodebID(sites_str)
+                            if cellRes:
+                                siteCode = "(" + ','.join('\'{}\''.format(w) for w in siteCode) + ")"
+                                siteConfig = "(" + ','.join('\'{}\''.format(w) for w in siteConfig) + ")"
+                                siteRes = search_siteInfo(searchSite=siteCode, search_type='site')
+                                bbuRes = search_bbuInfo(searchSiteConfig=siteConfig, search_type='nodeb')
+                                dataView = {**cellRes, **siteRes, **bbuRes}
+                                return render_template('searchID.html', resSearch=dataView,
+                                                       link=config.configURL.URL, content_type='application/json')
+                            else:
+                                flash('{} is not found in existing data'.format(filterParam), 'error')
+                                return render_template('searchID.html', link=config.configURL.URL,
+                                                       content_type='application/json')
+                    except ValueError:
+                        flash('{} is not found in existing data'.format(filterParam), 'error')
+                        return render_template('searchID.html', link=config.configURL.URL,
+                                               content_type='application/json')
             elif filterParam == 'enodebid':
                 site_search = list(re.split('[,/\\\s]', searchParam))
                 if len(site_search) > 5:
@@ -458,23 +489,27 @@ def search_id():
                     return render_template('searchID.html', link=config.configURL.URL,
                                            content_type='application/json')
                 else:
-                    if any(len(site) < 5 for site in site_search):
+                    if any(int(site) not in range(0, 1048575) for site in site_search):
                         flash('SiteConfig: should be equal to SiteCode or other', 'bbu')
                         return render_template('searchID.html', link=config.configURL.URL,
                                                content_type='application/json')
                     else:
-                        #
-                        # search by NodeName, cannot be separated, search all
-                        #
-                        # TODO sites_str = '________X' or '________Y'
-                        bbuRes = search_bbuInfo(searchSiteConfig=site_search, search_type='bbu')
-                        if bbuRes:
-                            siteRes = search_siteInfo(searchSite=site_search, search_type='bbu')
-                            cellRes = search_for_bbu(site_search)
-                            dataView = {**cellRes, **siteRes, **bbuRes}
-                            return render_template('searchID.html', resSearch=dataView,
-                                                   link=config.configURL.URL, content_type='application/json')
-                        else:
+                        try:
+                            sites_str = "(" + ','.join('\'{}\''.format(w) for w in site_search) + ")"
+                            cellRes, siteCode, siteConfig = search_for_enodebID(sites_str)
+                            if cellRes:
+                                siteCode = "(" + ','.join('\'{}\''.format(w) for w in siteCode) + ")"
+                                siteConfig = "(" + ','.join('\'{}\''.format(w) for w in siteConfig) + ")"
+                                siteRes = search_siteInfo(searchSite=siteCode, search_type='site')
+                                bbuRes = search_bbuInfo(searchSiteConfig=siteConfig, search_type='nodeb')
+                                dataView = {**cellRes, **siteRes, **bbuRes}
+                                return render_template('searchID.html', resSearch=dataView,
+                                                       link=config.configURL.URL, content_type='application/json')
+                            else:
+                                flash('{} is not found in existing data'.format(filterParam), 'error')
+                                return render_template('searchID.html', link=config.configURL.URL,
+                                                       content_type='application/json')
+                        except ValueError:
                             flash('{} is not found in existing data'.format(filterParam), 'error')
                             return render_template('searchID.html', link=config.configURL.URL,
                                                    content_type='application/json')

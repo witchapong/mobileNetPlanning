@@ -7,7 +7,7 @@ click-plugins==1.0.4
 cligj==0.5.0
 dnspython==1.16.0
 et-xmlfile==1.0.1
-eventlet==0.24.1
+eventlet==0.31.0
 Flask==1.0.2
 Flask-SocketIO==3.1.2
 geographiclib==1.49
@@ -53,7 +53,7 @@ click-plugins==1.0.4
 cligj==0.5.0
 dnspython==1.16.0
 et-xmlfile==1.0.1
-eventlet==0.24.1
+eventlet==0.31.0
 Flask==1.0.2
 Flask-SocketIO==3.1.2
 geographiclib==1.49
@@ -98,7 +98,7 @@ click-plugins==1.0.4
 cligj==0.5.0
 dnspython==1.16.0
 et-xmlfile==1.0.1
-eventlet==0.24.1
+eventlet==0.31.0
 Flask==1.0.2
 Flask-SocketIO==3.1.2
 geographiclib==1.49

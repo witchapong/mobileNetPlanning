@@ -1,6 +1,6 @@
 astroid==2.1.0
 attrs==18.2.0
-certifi==2018.11.29
+certifi==2022.12.7
 chardet==3.0.4
 Click==7.0
 click-plugins==1.0.4
@@ -46,7 +46,7 @@ wrapt==1.11.1
 xlrd==1.2.0
 astroid==2.1.0
 attrs==18.2.0
-certifi==2018.11.29
+certifi==2022.12.7
 chardet==3.0.4
 Click==7.0
 click-plugins==1.0.4
@@ -91,7 +91,7 @@ wrapt==1.11.1
 xlrd==1.2.0
 astroid==2.1.0
 attrs==18.2.0
-certifi==2018.11.29
+certifi==2022.12.7
 chardet==3.0.4
 Click==7.0
 click-plugins==1.0.4
